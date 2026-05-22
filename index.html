@@ -350,7 +350,6 @@
     </header>
 
     <div class="main-layout">
-        <!-- 評論輸入面板 -->
         <div class="card-panel">
             <h2>發表新評論</h2>
             <form id="commentForm" onsubmit="event.preventDefault(); handleFormSubmit();">
@@ -384,9 +383,7 @@
             </form>
         </div>
 
-        <!-- 評論流與篩選面板 -->
         <div>
-            <!-- 雙重篩選控制列 -->
             <div class="filter-section">
                 <div class="filter-row">
                     <div class="filter-label">審核狀態：</div>
@@ -408,21 +405,27 @@
                 </div>
             </div>
 
-            <!-- 動態卡片容器 -->
             <div id="cardsContainer" class="cards-list">
-                <!-- 由 JavaScript 動態填入 -->
-            </div>
+                </div>
         </div>
     </div>
 </div>
 
 <script>
-    // 全域篩選追蹤變數
+    // ==========================================================================
+    // BACKEND CONNECTOR CONFIGURATION
+    // ==========================================================================
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxb2-PBAJSiGYeRPsLOM_-xfZe6-glWk8bKJ2PaiUb3zlcRz3hPd-sMpRNPCOTyZMlpww/exec";
+
+    // 全域記憶體資料快取
+    let runtimeRecords = [];
     let currentStatusFilter = 'all';
     let currentCategoryFilter = 'all';
 
     // 頁面初次載入
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
+        // 優先從試算表撈取資料，並啟動渲染流程
+        runtimeRecords = await fetchRecordsFromSheet();
         applyFiltersAndRender();
     });
 
@@ -440,26 +443,26 @@
             content: contentInput.value.trim()
         };
 
-        // 建立與儲存流程
+        // 建立資料
         const newRecord = createRecord(formData);
+        
+        // 儲存到快取、LocalStorage 並非同步上傳雲端
         saveData(newRecord);
 
-        // 重設表單，提升使用者體驗
+        // 重設輸入表單
         bandNameInput.value = '';
         songInput.value = '';
         categoryInput.value = '';
         contentInput.value = '';
 
-        // 動態即時重繪
+        // 前端畫面即時更新
         applyFiltersAndRender();
     }
 
     // 集中處理篩選，將篩選後的資料餵入 renderList
     function applyFiltersAndRender() {
-        const allRecords = loadData();
-        
         // 排序：最新的評論永遠排在最上方
-        let filtered = [...allRecords].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        let filtered = [...runtimeRecords].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
         // 狀態篩選 (all / active / done)
         if (currentStatusFilter !== 'all') {
@@ -492,55 +495,112 @@
 
 
     /* ==========================================================================
-       技術要求：五大核心獨立 Function
+       技術要求與擴充：核心 Data 處理與後端同步 Function 
        ========================================================================== */
+
+    // 新增：向後端同步 POST 請求
+    async function syncToSheet(payload) {
+        try {
+            const response = await fetch(APPS_SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify(payload)
+            });
+            const resData = await response.json();
+            if (!resData.ok) console.warn("Google Sheet 同步失敗:", resData.error);
+        } catch (err) {
+            console.error("網路同步異常:", err);
+        }
+    }
+
+    // 新增：從後端發送 GET 請求讀取完整評論
+    async function fetchRecordsFromSheet() {
+        try {
+            const response = await fetch(APPS_SCRIPT_URL);
+            const data = await response.json();
+            if (data.ok && Array.isArray(data.records)) {
+                // 將後端回傳的所有物件依據合約對應表進行格式校對
+                const normalized = data.records.map(r => normalizeRecord(r));
+                // 同步將最新雲端狀態備份保存至 local 離線空間
+                localStorage.setItem('records', JSON.stringify(normalized));
+                return normalized;
+            }
+        } catch (err) {
+            console.warn("無法連接 Google Sheet，自動載入本機離線 Fallback 快取儲存。");
+        }
+        // 如果遠端發生連線問題，無縫讀取離線 Fallback 資料庫
+        return getLocalStorageFallback();
+    }
+
+    // 新增：將 Sheet 欄位標頭清洗對照回前端規範的 Key
+    function normalizeRecord(record) {
+        return {
+            id: String(record["系統ID"] || record.id || ""),
+            createdAt: String(record["建立時間"] || record.createdAt || new Date().toISOString()),
+            status: String(record["狀態"] || record.status || "active"),
+            bandName: String(record["樂隊名稱"] || record.bandName || ""),
+            song: String(record["歌曲名稱"] || record.song || ""),
+            category: String(record["音樂風格"] || record.category || "其他"),
+            content: String(record["評論內容"] || record.content || ""),
+            likes: Number(record["共鳴數"] !== undefined ? record["共鳴數"] : (record.likes || 0))
+        };
+    }
+
+    // 輔助函式：回歸獲取本地緩存
+    function getLocalStorageFallback() {
+        const rawData = localStorage.getItem('records');
+        return rawData ? JSON.parse(rawData) : [];
+    }
 
     // 1. 建立一筆 Record 物件 (createRecord)
     function createRecord(formData) {
         return {
             id: Date.now() + "_" + Math.random().toString(36).substr(2, 5),
             createdAt: new Date().toISOString(),
-            status: 'active', // 預設狀態為 active
+            status: 'active',
             bandName: formData.bandName,
             song: formData.song,
             category: formData.category,
             content: formData.content,
-            likes: 0 // 共鳴按讚數預設為 0
+            likes: 0
         };
     }
 
-    // 2. 新增 record 並儲存到 localStorage (saveData)
+    // 2. 新增 record 並儲存到快取與 localStorage (saveData)
     function saveData(record) {
-        const currentRecords = loadData();
-        currentRecords.push(record);
-        localStorage.setItem('records', JSON.stringify(currentRecords));
+        runtimeRecords.push(record);
+        localStorage.setItem('records', JSON.stringify(runtimeRecords));
+        
+        // 非同步上推 Google Sheet 後端
+        syncToSheet({ action: "create", record });
     }
 
-    // 3. 從 localStorage 讀取 records 陣列 (loadData)
+    // 3. 從暫存快取或離線庫讀取 records 陣列 (loadData)
     function loadData() {
-        const rawData = localStorage.getItem('records');
-        return rawData ? JSON.parse(rawData) : [];
+        return runtimeRecords.length > 0 ? runtimeRecords : getLocalStorageFallback();
     }
 
-    // 4. 更新單筆資料內容並存回 localStorage (updateRecord)
+    // 4. 更新單筆資料內容並存回儲存層 (updateRecord)
     function updateRecord(id, changes) {
-        const currentRecords = loadData();
-        const index = currentRecords.findIndex(r => r.id === id);
+        const index = runtimeRecords.findIndex(r => r.id === id);
         
         if (index !== -1) {
-            // 合併變更欄位
-            currentRecords[index] = { ...currentRecords[index], ...changes };
-            localStorage.setItem('records', JSON.stringify(currentRecords));
+            // 前端執行合併變更
+            runtimeRecords[index] = { ...runtimeRecords[index], ...changes };
+            localStorage.setItem('records', JSON.stringify(runtimeRecords));
             
-            // 立刻更新當前畫面狀態
+            // 畫面即時動態重繪
             applyFiltersAndRender();
+            
+            // 非同步發送 update 指令同步雲端試算表指定行
+            syncToSheet({ action: "update", id, changes });
         }
     }
 
     // 5. 動態渲染卡片列表 (renderList)
     function renderList(recordsToShow) {
         const container = document.getElementById('cardsContainer');
-        container.innerHTML = ''; // 移除舊有的節點
+        container.innerHTML = ''; 
 
         if (recordsToShow.length === 0) {
             container.innerHTML = `<div class="no-records">💬 目前此篩選分類下沒有任何樂隊評論。</div>`;
@@ -556,7 +616,6 @@
             const actionStatusText = record.status === 'done' ? '↩️ 復原' : '刪除言論';
             const nextStatus = record.status === 'done' ? 'active' : 'done';
             
-            // 讀取點讚數，加上安全防護值，避免 NaN 錯誤
             const currentLikes = record.likes || 0;
 
             card.innerHTML = `
@@ -571,11 +630,9 @@
                 <div class="card-footer">
                     <div class="meta-info">發表於: ${formattedTime}</div>
                     <div class="action-group">
-                        <!-- 按讚 (+1) 按鈕 -->
                         <button class="action-btn btn-like" onclick="updateRecord('${record.id}', { likes: ${currentLikes + 1} })">
                             🤘 共鳴 +<span>${currentLikes}</span>
                         </button>
-                        <!-- 審核狀態切換按鈕 -->
                         <button class="action-btn btn-status" onclick="updateRecord('${record.id}', { status: '${nextStatus}' })">
                             ${actionStatusText}
                         </button>

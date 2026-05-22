@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎸 LiveStage 樂隊評論區</title>
+    <style>
+        :root {
+            --rock-red: #ff3838;
+            --rock-hover: #ff4d4d;
+            --neon-cyan: #17dedb;
+            --dark-bg: #0f0f12;
+            --panel-bg: #1a1a1f;
+            --card-bg: #24242b;
+            --text-light: #f5f6fa;
+            --text-muted: #a4b0be;
+            --status-active: #17dedb;
+            --status-done: #747d8c;
+            --booked-bg: #19191d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            background-image: radial-gradient(rgba(23, 222, 219, 0.05) 1px, transparent 0);
+            background-size: 24px 24px;
+            color: var(--text-light);
+            padding: 25px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 35px;
+            padding: 30px;
+            background: linear-gradient(180deg, #000, var(--panel-bg));
+            border: 2px solid var(--rock-red);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(255, 56, 56, 0.2);
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800;
+            color: var(--text-light);
+            text-shadow: 2px 2px 0px var(--rock-red);
+            margin-bottom: 5px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+
+        @media (min-width: 768px) {
+            .main-layout {
+                grid-template-columns: 350px 1fr;
+            }
+        }
+
+        /* 評論提交面板 */
+        .card-panel {
+            background: var(--panel-bg);
+            border: 2px solid #333;
+            border-radius: 16px;
+            padding: 25px;
+            height: fit-content;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--neon-cyan);
+            border-bottom: 2px dashed #333;
+            padding-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background: #121214;
+            border: 2px solid #444;
+            color: white;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button.submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--rock-red);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        button.submit-btn:hover {
+            background: var(--rock-hover);
+            transform: translateY(-1px);
+        }
+
+        button.submit-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* 雙篩選器控制面板 */
+        .filter-section {
+            background: #16161a;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #222;
+        }
+
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            min-width: 80px;
+            font-weight: bold;
+        }
+
+        .filter-btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--card-bg);
+            color: var(--text-muted);
+            border: 1px solid #444;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: #666;
+            color: #fff;
+        }
+
+        .filter-btn.active {
+            background: var(--text-light);
+            color: var(--dark-bg);
+            border-color: var(--text-light);
+            font-weight: bold;
+        }
+
+        /* 評論卡片列表 */
+        .cards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .comment-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 6px solid var(--status-active);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            position: relative;
+            transition: opacity 0.3s, transform 0.2s;
+        }
+
+        .comment-card.is-done {
+            border-left-color: var(--status-done);
+            background: var(--booked-bg);
+            opacity: 0.65;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .band-tag {
+            font-size: 0.8rem;
+            background: #333;
+            color: var(--neon-cyan);
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .status-badge {
+            font-size: 0.72rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .comment-card.is-done .status-badge {
+            background: rgba(116, 125, 140, 0.15);
+            color: var(--status-done);
+            border: 1px solid var(--status-done);
+        }
+
+        .comment-card:not(.is-done) .status-badge {
+            background: rgba(23, 222, 219, 0.15);
+            color: var(--status-active);
+            border: 1px solid var(--status-active);
+        }
+
+        .song-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .comment-card.is-done .song-title {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .review-content {
+            font-size: 0.95rem;
+            color: #d1d2d6;
+            margin-bottom: 15px;
+            word-break: break-all;
+            white-space: pre-wrap;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px dashed #3a3a45;
+            padding-top: 12px;
+        }
+
+        .meta-info {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .action-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            background: #121214;
+            color: var(--text-light);
+            border: 1px solid #444;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+
+        .btn-like:hover {
+            border-color: var(--rock-red);
+            color: var(--rock-red);
+        }
+
+        .btn-status:hover {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+
+        .no-records {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            background: var(--panel-bg);
+            border-radius: 12px;
+            border: 1px dashed #444;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🎸 LiveStage 樂隊評論區</h1>
+        <p>樂迷集結地！在這裡分享你對樂隊、新歌的獨到看法，寫下最真誠的評論！</p>
+    </header>
+
+    <div class="main-layout">
+        <!-- 評論輸入面板 -->
+        <div class="card-panel">
+            <h2>發表新評論</h2>
+            <form id="commentForm" onsubmit="event.preventDefault(); handleFormSubmit();">
+                <div class="form-group">
+                    <label for="bandName">樂隊名稱 *</label>
+                    <input type="text" id="bandName" placeholder="例如：Nirvana, Beyond" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="song">歌曲名稱 *</label>
+                    <input type="text" id="song" placeholder="例如：Smells Like Teen Spirit" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">音樂類別 *</label>
+                    <select id="category" required>
+                        <option value="" disabled selected>-- 選擇風格類別 --</option>
+                        <option value="搖滾">搖滾 (Rock)</option>
+                        <option value="金屬">金屬 (Metal)</option>
+                        <option value="流行">流行 (Pop)</option>
+                        <option value="其他">其他 (Other)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="content">評論看法 (必填) *</label>
+                    <textarea id="content" rows="4" placeholder="分享你對這首歌或樂隊的看法..." required></textarea>
+                </div>
+                
+                <button type="submit" class="submit-btn">💥 發送評論</button>
+            </form>
+        </div>
+
+        <!-- 評論流與篩選面板 -->
+        <div>
+            <!-- 雙重篩選控制列 -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-label">審核狀態：</div>
+                    <div class="filter-btn-group" id="statusFilterGroup">
+                        <button class="filter-btn active" onclick="changeStatusFilter('all', this)">全部</button>
+                        <button class="filter-btn" onclick="changeStatusFilter('active', this)">可讀留言 (Active)</button>
+                        <button class="filter-btn" onclick="changeStatusFilter('done', this)">刪除</button>
+                    </div>
+                </div>
+                <div class="filter-row">
+                    <div class="filter-label">風格篩選：</div>
+                    <div class="filter-btn-group" id="categoryFilterGroup">
+                        <button class="filter-btn active" onclick="changeCategoryFilter('all', this)">全部</button>
+                        <button class="filter-btn" onclick="changeCategoryFilter('搖滾', this)">搖滾</button>
+                        <button class="filter-btn" onclick="changeCategoryFilter('金屬', this)">金屬</button>
+                        <button class="filter-btn" onclick="changeCategoryFilter('流行', this)">流行</button>
+                        <button class="filter-btn" onclick="changeCategoryFilter('其他', this)">其他</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 動態卡片容器 -->
+            <div id="cardsContainer" class="cards-list">
+                <!-- 由 JavaScript 動態填入 -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 全域篩選追蹤變數
+    let currentStatusFilter = 'all';
+    let currentCategoryFilter = 'all';
+
+    // 頁面初次載入
+    window.addEventListener('DOMContentLoaded', () => {
+        applyFiltersAndRender();
+    });
+
+    // 表單提交控制器
+    function handleFormSubmit() {
+        const bandNameInput = document.getElementById('bandName');
+        const songInput = document.getElementById('song');
+        const categoryInput = document.getElementById('category');
+        const contentInput = document.getElementById('content');
+
+        const formData = {
+            bandName: bandNameInput.value.trim(),
+            song: songInput.value.trim(),
+            category: categoryInput.value,
+            content: contentInput.value.trim()
+        };
+
+        // 建立與儲存流程
+        const newRecord = createRecord(formData);
+        saveData(newRecord);
+
+        // 重設表單，提升使用者體驗
+        bandNameInput.value = '';
+        songInput.value = '';
+        categoryInput.value = '';
+        contentInput.value = '';
+
+        // 動態即時重繪
+        applyFiltersAndRender();
+    }
+
+    // 集中處理篩選，將篩選後的資料餵入 renderList
+    function applyFiltersAndRender() {
+        const allRecords = loadData();
+        
+        // 排序：最新的評論永遠排在最上方
+        let filtered = [...allRecords].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        // 狀態篩選 (all / active / done)
+        if (currentStatusFilter !== 'all') {
+            filtered = filtered.filter(r => r.status === currentStatusFilter);
+        }
+
+        // 分類篩選 (all / 搖滾 / 金屬 / 流行 / 其他)
+        if (currentCategoryFilter !== 'all') {
+            filtered = filtered.filter(r => r.category === currentCategoryFilter);
+        }
+
+        renderList(filtered);
+    }
+
+    // 更新狀態篩選鈕 UI
+    function changeStatusFilter(value, element) {
+        document.querySelectorAll('#statusFilterGroup .filter-btn').forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
+        currentStatusFilter = value;
+        applyFiltersAndRender();
+    }
+
+    // 更新類別篩選鈕 UI
+    function changeCategoryFilter(value, element) {
+        document.querySelectorAll('#categoryFilterGroup .filter-btn').forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
+        currentCategoryFilter = value;
+        applyFiltersAndRender();
+    }
+
+
+    /* ==========================================================================
+       技術要求：五大核心獨立 Function
+       ========================================================================== */
+
+    // 1. 建立一筆 Record 物件 (createRecord)
+    function createRecord(formData) {
+        return {
+            id: Date.now() + "_" + Math.random().toString(36).substr(2, 5),
+            createdAt: new Date().toISOString(),
+            status: 'active', // 預設狀態為 active
+            bandName: formData.bandName,
+            song: formData.song,
+            category: formData.category,
+            content: formData.content,
+            likes: 0 // 共鳴按讚數預設為 0
+        };
+    }
+
+    // 2. 新增 record 並儲存到 localStorage (saveData)
+    function saveData(record) {
+        const currentRecords = loadData();
+        currentRecords.push(record);
+        localStorage.setItem('records', JSON.stringify(currentRecords));
+    }
+
+    // 3. 從 localStorage 讀取 records 陣列 (loadData)
+    function loadData() {
+        const rawData = localStorage.getItem('records');
+        return rawData ? JSON.parse(rawData) : [];
+    }
+
+    // 4. 更新單筆資料內容並存回 localStorage (updateRecord)
+    function updateRecord(id, changes) {
+        const currentRecords = loadData();
+        const index = currentRecords.findIndex(r => r.id === id);
+        
+        if (index !== -1) {
+            // 合併變更欄位
+            currentRecords[index] = { ...currentRecords[index], ...changes };
+            localStorage.setItem('records', JSON.stringify(currentRecords));
+            
+            // 立刻更新當前畫面狀態
+            applyFiltersAndRender();
+        }
+    }
+
+    // 5. 動態渲染卡片列表 (renderList)
+    function renderList(recordsToShow) {
+        const container = document.getElementById('cardsContainer');
+        container.innerHTML = ''; // 移除舊有的節點
+
+        if (recordsToShow.length === 0) {
+            container.innerHTML = `<div class="no-records">💬 目前此篩選分類下沒有任何樂隊評論。</div>`;
+            return;
+        }
+
+        recordsToShow.forEach(record => {
+            const card = document.createElement('div');
+            card.className = `comment-card ${record.status === 'done' ? 'is-done' : ''}`;
+
+            const formattedTime = new Date(record.createdAt).toLocaleString();
+            const badgeText = record.status === 'done' ? '已刪除' : 'Active';
+            const actionStatusText = record.status === 'done' ? '↩️ 復原' : '刪除言論';
+            const nextStatus = record.status === 'done' ? 'active' : 'done';
+            
+            // 讀取點讚數，加上安全防護值，避免 NaN 錯誤
+            const currentLikes = record.likes || 0;
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="band-tag">🎸 ${record.bandName}</span>
+                    <span class="status-badge">${badgeText}</span>
+                </div>
+                
+                <div class="song-title">🎵 ${record.song} <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">[${record.category}]</span></div>
+                <div class="review-content">${record.content}</div>
+                
+                <div class="card-footer">
+                    <div class="meta-info">發表於: ${formattedTime}</div>
+                    <div class="action-group">
+                        <!-- 按讚 (+1) 按鈕 -->
+                        <button class="action-btn btn-like" onclick="updateRecord('${record.id}', { likes: ${currentLikes + 1} })">
+                            🤘 共鳴 +<span>${currentLikes}</span>
+                        </button>
+                        <!-- 審核狀態切換按鈕 -->
+                        <button class="action-btn btn-status" onclick="updateRecord('${record.id}', { status: '${nextStatus}' })">
+                            ${actionStatusText}
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+</script>
+</body>
+</html>

@@ -114,7 +114,7 @@
             transform: scale(0.98);
         }
 
-        /* 5. 音樂類型分區 (凜秀 / MCR 示範) */
+        /* 音樂類型分區 (凜秀 / MCR 示範) */
         .genre-tabs {
             display: flex;
             gap: 10px;
@@ -226,7 +226,7 @@
             padding-bottom: 10px;
         }
 
-        /* 7. 留言者可改名輸入框 */
+        /* 留言者可改名輸入框 */
         .author-input {
             background: transparent;
             border: none;
@@ -326,9 +326,10 @@
     <div class="container">
         <header>
             <h1>Rock Verse</h1>
-            <p>高中音樂研究社留言板（凛として時雨 / MCR 熱烈推廣中）</p>
+            <p>高中音樂研究社留言板</p>
         </header>
 
+        <!-- 發言表單 -->
         <div class="form-section">
             <form id="commentForm" onsubmit="handleFormSubmit(event)">
                 <div class="form-group">
@@ -353,12 +354,15 @@
             </form>
         </div>
 
+        <!-- 進階功能：資料視覺化統計圖表 (純 HTML/CSS 繪製) -->
         <div class="chart-section">
             <div class="chart-title">📊 樂團/曲風討論熱度統計</div>
             <div id="visualizationContainer">
-                </div>
+                <!-- 由 JavaScript 動態繪製 -->
+            </div>
         </div>
 
+        <!-- 音樂類型分區切換 Tab -->
         <div class="genre-tabs" id="genreTabs">
             <div class="tab active" onclick="filterGenre('All')">全部全部</div>
             <div class="tab" onclick="filterGenre('凛として時雨')">凛として時雨</div>
@@ -368,8 +372,10 @@
             <div class="tab" onclick="filterGenre('Alternative')">Alternative</div>
         </div>
 
+        <!-- 留言列表 -->
         <div class="records-list" id="recordsContainer">
-            </div>
+            <!-- 留言卡片會動態加到這裡 -->
+        </div>
     </div>
 
     <script>
@@ -388,7 +394,6 @@
             fetch(APPS_SCRIPT_URL)
                 .then(response => response.json())
                 .then(data => {
-                    // 假設後端回傳的陣列在 data 或 data.records 中
                     allRecords = Array.isArray(data) ? data : (data.records || []);
                     renderRecords(allRecords);
                     renderVisualization(allRecords);
@@ -402,12 +407,12 @@
             container.innerHTML = '';
 
             records.forEach(item => {
-                // 4. 增加功能：自動隱藏（Hide）已被標記為刪除的留言 (防呆機制)
+                // 自動隱藏已被標記為刪除的留言
                 if (item.isDeleted === true || item.isDeleted === "true") {
                     return; 
                 }
 
-                // 5. 音樂類型分區前端過濾篩選
+                // 音樂類型分區前端過濾篩選
                 if (currentFilterGenre !== "All" && item.genre !== currentFilterGenre) {
                     return;
                 }
@@ -416,12 +421,13 @@
                 const card = document.createElement('div');
                 card.className = 'comment-card';
                 
-                // 解析狀態 (預設為 '已核准' 或 true/false 形式)
+                // 解析狀態
                 const isApproved = item.status === undefined ? true : (item.status === true || item.status === "true" || item.status === "已核准");
 
                 card.innerHTML = `
                     <div class="card-header">
                         <div>
+                            <!-- 留言者可改名功能 -->
                             <input type="text" class="author-input" value="${item.author || '無名搖滾客'}" 
                                 onblur="updateAuthorName('${item.id}', this.value)" title="點擊可直接修改暱稱">
                         </div>
@@ -431,6 +437,7 @@
                     <div class="card-footer">
                         <span>${item.timestamp ? new Date(item.timestamp).toLocaleString() : ''}</span>
                         
+                        <!-- Status Toggle 狀態切換器 -->
                         <div class="status-toggle-container">
                             <span class="status-label">${isApproved ? '🎵 演出中' : '💤 休息中'}</span>
                             <label class="switch">
@@ -489,7 +496,7 @@
             const author = document.getElementById('inputAuthor').value;
             const genre = document.getElementById('selectGenre').value;
             const content = document.getElementById('inputContent').value;
-            const id = 'id_' + Date.now(); // 產生唯一ID
+            const id = 'id_' + Date.now();
 
             const newRecord = {
                 id: id,
@@ -501,15 +508,12 @@
                 timestamp: new Date().toISOString()
             };
 
-            // 先在前端畫面上即時顯示
             allRecords.unshift(newRecord);
             renderRecords(allRecords);
             renderVisualization(allRecords);
 
-            // 清空輸入框
             document.getElementById('inputContent').value = '';
 
-            // 同步寫入後端資料庫
             syncToSheet({
                 action: "insert",
                 record: newRecord
@@ -520,14 +524,12 @@
         function toggleStatus(id, currentStatus) {
             const newStatus = currentStatus ? "休息中" : "已核准";
             
-            // 找尋全域暫存並更新前端顯示
             const record = allRecords.find(item => item.id === id);
             if (record) {
                 record.status = newStatus;
                 renderRecords(allRecords);
             }
 
-            // 嚴格遵守規範 4：更新 record 之後必須呼叫 syncToSheet
             syncToSheet({ 
                 action: "update", 
                 id: id, 
@@ -542,10 +544,8 @@
             const record = allRecords.find(item => item.id === id);
             if (record && record.author !== newName) {
                 record.author = newName;
-                // 同步更新視覺化和列表
                 renderRecords(allRecords);
                 
-                // 同步到 Google Sheet
                 syncToSheet({
                     action: "update",
                     id: id,
@@ -558,7 +558,6 @@
         function filterGenre(genreName) {
             currentFilterGenre = genreName;
             
-            // 切換 Tab 活躍狀態外觀
             const tabs = document.querySelectorAll('.tab');
             tabs.forEach(tab => {
                 if (tab.innerText === genreName || (genreName === 'All' && tab.innerText === '全部全部')) {
@@ -575,7 +574,7 @@
         function syncToSheet(payload) {
             fetch(APPS_SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors', // 配合 Google Apps Script 跨網域常規設定
+                mode: 'no-cors',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -583,7 +582,6 @@
             })
             .then(() => {
                 console.log("後端同步成功:", payload.action);
-                // 為了確保資料精準，可視情況在 insert 後重新 loadData()
             })
             .catch(err => console.error("後端同步失敗:", err));
         }

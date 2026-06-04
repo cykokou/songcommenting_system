@@ -3,588 +3,948 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rock Verse - 音樂交流留言板</title>
+    <title>🎸 LiveStage 樂隊評論區 - 搖滾樂迷殿堂</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- 搖滾專業風 CSS 樣式 --- */
         :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --card-hover: #252525;
-            --primary-color: #ff3e3e;
-            --primary-hover: #e03535;
-            --text-color: #e0e0e0;
-            --text-muted: #888888;
-            --border-color: #333333;
+            --rock-red: #ff3838;
+            --rock-hover: #ff5252;
+            --neon-cyan: #17dedb;
+            --neon-cyan-hover: #3ef0ed;
+            --dark-bg: #0b0c10;
+            --panel-bg: rgba(30, 30, 38, 0.7);
+            --card-bg: rgba(42, 42, 53, 0.65);
+            --text-light: #f5f6fa;
+            --text-muted: #8b929e;
+            --status-active: #17dedb;
+            --status-done: #747d8c;
+            --booked-bg: rgba(25, 25, 30, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
-            /* 搖滾微網格背景 */
-            background-image: linear-gradient(rgba(255, 62, 62, 0.03) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(255, 62, 62, 0.03) 1px, transparent 1px);
-            background-size: 20px 20px;
+            background-color: var(--dark-bg);
+            /* 搖滾黑膠網格感背景 */
+            background-image: 
+                linear-gradient(rgba(255, 56, 56, 0.03) 1px, transparent 0),
+                linear-gradient(90deg, rgba(255, 56, 56, 0.03) 1px, transparent 0),
+                radial-gradient(rgba(23, 222, 219, 0.04) 1px, transparent 0);
+            background-size: 40px 40px, 40px 40px, 20px 20px;
+            color: var(--text-light);
+            padding: 25px;
+            line-height: 1.5;
+            min-height: 100vh;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 20px;
         }
 
+        /* 頂部大橫幅 */
         header {
             text-align: center;
-            margin-bottom: 40px;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 20px;
+            margin-bottom: 35px;
+            padding: 35px 20px;
+            background: linear-gradient(135deg, #000000 0%, #1e1e24 100%);
+            border: 2px solid var(--rock-red);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(255, 56, 56, 0.25);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -50%; width: 200%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(23, 222, 219, 0.05), transparent);
+            transform: rotate(30deg);
+            animation: shine 6s infinite linear;
+        }
+
+        @keyframes shine {
+            0% { transform: translate(-30%, -30%) rotate(30deg); }
+            100% { transform: translate(30%, 30%) rotate(30deg); }
         }
 
         header h1 {
-            font-size: 2.5rem;
-            color: #fff;
+            font-size: 2.6rem;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin: 0;
-            text-shadow: 0 0 10px rgba(255, 62, 62, 0.5);
+            font-weight: 900;
+            color: var(--text-light);
+            text-shadow: 3px 3px 0px var(--rock-red);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
         }
 
         header p {
             color: var(--text-muted);
-            margin-top: 5px;
+            font-size: 1.05rem;
+            font-weight: 400;
         }
 
-        /* 表單樣式 */
-        .form-section {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        /* 後端狀態指示燈 */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 15px;
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            font-weight: bold;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ffdd57;
+            box-shadow: 0 0 8px #ffdd57;
+            display: inline-block;
+        }
+
+        .status-dot.online {
+            background: #2ed573;
+            box-shadow: 0 0 8px #2ed573;
+        }
+
+        .status-dot.offline {
+            background: #ff4757;
+            box-shadow: 0 0 8px #ff4757;
+        }
+
+        /* 雙欄主版面 */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media (min-width: 800px) {
+            .main-layout {
+                grid-template-columns: 380px 1fr;
+            }
+        }
+
+        /* 毛玻璃面板樣式 */
+        .glass-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            height: fit-content;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--neon-cyan);
+            border-bottom: 2px dashed rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
+            position: relative;
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
+            font-size: 0.85rem;
             color: var(--text-muted);
-            font-weight: bold;
-            font-size: 0.9rem;
+            margin-bottom: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        input[type="text"], select, textarea {
+        input, select, textarea {
             width: 100%;
-            padding: 10px;
-            background-color: #151515;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            color: #fff;
-            box-sizing: border-box;
-            transition: border-color 0.3s;
-        }
-
-        input[type="text"]:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        button {
-            background-color: var(--primary-color);
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            font-weight: bold;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.3s, transform 0.1s;
-        }
-
-        button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        /* 音樂類型分區 (凜秀 / MCR 示範) */
-        .genre-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            overflow-x: auto;
-        }
-
-        .tab {
-            padding: 8px 16px;
-            background: #222;
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            white-space: nowrap;
-            transition: all 0.3s;
-        }
-
-        .tab.active, .tab:hover {
-            background: var(--primary-color);
+            padding: 12px 14px;
+            background: rgba(18, 18, 22, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             color: white;
-            border-color: var(--primary-color);
-        }
-
-        /* 資料視覺化區塊 */
-        .chart-section {
-            background-color: var(--card-bg);
-            padding: 20px;
             border-radius: 8px;
-            border: 1px solid var(--border-color);
-            margin-bottom: 30px;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        .chart-title {
-            font-size: 1.1rem;
-            margin-top: 0;
-            margin-bottom: 15px;
-            color: #fff;
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(23, 222, 219, 0.25);
+            background: rgba(18, 18, 22, 0.95);
         }
 
-        .bar-container {
+        textarea {
+            resize: vertical;
+        }
+
+        .char-counter {
+            position: absolute;
+            bottom: -18px;
+            right: 2px;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        button.submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--rock-red) 0%, #b31010 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255, 56, 56, 0.3);
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
         }
 
-        .bar-label {
-            width: 180px;
-            font-size: 0.85rem;
-            color: var(--text-color);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+        button.submit-btn:hover {
+            background: linear-gradient(135deg, var(--rock-hover) 0%, var(--rock-red) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 56, 56, 0.45);
         }
 
-        .bar-track {
-            flex-grow: 1;
-            background-color: #151515;
-            height: 15px;
-            border-radius: 3px;
-            margin: 0 10px;
-            overflow: hidden;
+        button.submit-btn:active {
+            transform: translateY(1px);
         }
 
-        .bar-fill {
-            background: linear-gradient(90deg, var(--primary-color), #ff7676);
-            height: 100%;
-            width: 0%;
-            transition: width 0.6s ease-out;
-        }
-
-        .bar-value {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            width: 25px;
-            text-align: right;
-        }
-
-        /* 留言卡片列表 */
-        .records-list {
+        /* 搜尋與排序工具列 */
+        .search-sort-bar {
+            background: rgba(22, 22, 26, 0.6);
+            border: 1px solid var(--glass-border);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
 
-        .comment-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
+        @media (min-width: 600px) {
+            .search-sort-bar {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        .search-wrapper {
             position: relative;
-            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+            flex: 1;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .search-input {
+            padding-left: 36px;
+            width: 100%;
+            background: rgba(10, 10, 12, 0.8);
+        }
+
+        .sort-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 雙篩選器控制面板 */
+        .filter-section {
+            background: var(--panel-bg);
+            padding: 18px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            min-width: 80px;
+            font-weight: bold;
+        }
+
+        .filter-btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--card-bg);
+            color: var(--text-muted);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover {
+            border-color: rgba(255,255,255,0.25);
+            color: #fff;
+        }
+
+        .filter-btn.active {
+            background: var(--text-light);
+            color: var(--dark-bg);
+            border-color: var(--text-light);
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255,255,255,0.15);
+        }
+
+        /* 評論卡片列表 */
+        .cards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .comment-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 22px;
+            border-left: 6px solid var(--status-active);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            backdrop-filter: blur(12px);
         }
 
         .comment-card:hover {
-            transform: translateY(-2px);
-            background-color: var(--card-hover);
-            box-shadow: 0 6px 12px rgba(255, 62, 62, 0.05);
+            transform: translateY(-3px) scale(1.005);
+            box-shadow: 0 8px 25px rgba(23, 222, 219, 0.15);
+            border-color: rgba(23, 222, 219, 0.3);
+        }
+
+        .comment-card.is-done {
+            border-left-color: var(--status-done);
+            background: var(--booked-bg);
+            opacity: 0.55;
+        }
+
+        .comment-card.is-done:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border-color: var(--glass-border);
         }
 
         .card-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 10px;
-            border-bottom: 1px dashed #333;
-            padding-bottom: 10px;
+            align-items: center;
+            margin-bottom: 12px;
         }
 
-        /* 留言者可改名輸入框 */
-        .author-input {
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid transparent;
-            color: #fff;
-            font-weight: bold;
-            font-size: 1rem;
-            padding: 2px 5px;
-            width: 150px;
-            transition: border-color 0.3s, background 0.3s;
+        .band-tag {
+            font-size: 0.85rem;
+            background: rgba(23, 222, 219, 0.12);
+            color: var(--neon-cyan);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            border: 1px solid rgba(23, 222, 219, 0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .author-input:focus {
-            background: #111;
-            border-bottom: 1px solid var(--primary-color);
-            outline: none;
-        }
-
-        .genre-badge {
-            background-color: #333;
-            color: #aaa;
+        .status-badge {
+            font-size: 0.72rem;
             padding: 3px 8px;
             border-radius: 4px;
-            font-size: 0.75rem;
+            font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .comment-content {
-            font-size: 1rem;
-            color: #ddd;
-            margin-bottom: 15px;
-            word-break: break-word;
+        .comment-card.is-done .status-badge {
+            background: rgba(116, 125, 140, 0.15);
+            color: var(--status-done);
+            border: 1px solid var(--status-done);
+        }
+
+        .comment-card:not(.is-done) .status-badge {
+            background: rgba(23, 222, 219, 0.15);
+            color: var(--status-active);
+            border: 1px solid var(--status-active);
+        }
+
+        .song-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-light);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 8px;
+        }
+
+        .comment-card.is-done .song-title {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .review-content {
+            font-size: 0.98rem;
+            color: #d1d2d6;
+            margin-bottom: 18px;
+            word-break: break-all;
+            white-space: pre-wrap;
+            background: rgba(0,0,0,0.15);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.03);
         }
 
         .card-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.8rem;
-            color: var(--text-muted);
+            border-top: 1px dashed rgba(255, 255, 255, 0.08);
+            padding-top: 14px;
         }
 
-        /* Status Toggle 開關 */
-        .status-toggle-container {
+        .meta-info {
+            font-size: 0.78rem;
+            color: var(--text-muted);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 4px;
         }
 
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 40px;
-            height: 20px;
+        .action-group {
+            display: flex;
+            gap: 12px;
         }
 
-        .switch input { 
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
+        .action-btn {
+            background: rgba(0, 0, 0, 0.4);
+            color: var(--text-light);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
             cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #444;
-            transition: .3s;
-            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.25s ease;
+            font-weight: 600;
         }
 
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 14px; width: 14px;
-            left: 3px; bottom: 3px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
+        .btn-like {
+            border-color: rgba(255, 56, 56, 0.2);
         }
 
-        input:checked + .slider {
-            background-color: var(--primary-color);
+        .btn-like:hover {
+            border-color: var(--rock-red);
+            color: var(--rock-red);
+            background: rgba(255, 56, 56, 0.08);
+            box-shadow: 0 0 10px rgba(255, 56, 56, 0.15);
         }
 
-        input:checked + .slider:before {
-            transform: translateX(20px);
+        /* 點讚搖滾手勢彈出動畫 */
+        .btn-like:active i {
+            animation: rockHand 0.4s ease-out;
         }
 
-        .status-label {
-            font-size: 0.75rem;
+        @keyframes rockHand {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5) rotate(-15deg); }
+            100% { transform: scale(1); }
+        }
+
+        .btn-status:hover {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            background: rgba(23, 222, 219, 0.08);
+            box-shadow: 0 0 10px rgba(23, 222, 219, 0.15);
+        }
+
+        /* 讀取骨架屏 */
+        .skeleton-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 22px;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .skeleton-shimmer {
+            height: 16px;
+            background: linear-gradient(90deg, #2a2a35 25%, #3f3f4e 50%, #2a2a35 75%);
+            background-size: 200% 100%;
+            animation: loading-shimmer 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes loading-shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .no-records {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            background: var(--panel-bg);
+            border-radius: 16px;
+            border: 2px dashed rgba(255,255,255,0.1);
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <h1>Rock Verse</h1>
-            <p>高中音樂研究社留言板</p>
-        </header>
+<div class="container">
+    <header>
+        <h1>🎸 LiveStage 樂隊評論區</h1>
+        <p>樂迷集結地！在這裡分享你對樂隊、新歌的獨到看法，寫下最真誠的評論！</p>
+        
+        <div class="status-indicator">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">正在同步雲端資料庫...</span>
+        </div>
+    </header>
 
-        <!-- 發言表單 -->
-        <div class="form-section">
-            <form id="commentForm" onsubmit="handleFormSubmit(event)">
+    <div class="main-layout">
+        <div class="card-panel glass-panel">
+            <h2><i class="fa-solid fa-pen-fancy"></i> 發表新評論</h2>
+            <form id="commentForm" onsubmit="event.preventDefault(); handleFormSubmit();">
                 <div class="form-group">
-                    <label for="inputAuthor">留言者名稱</label>
-                    <input type="text" id="inputAuthor" required placeholder="例如：搖滾阿高">
+                    <label for="bandName">樂隊名稱 *</label>
+                    <input type="text" id="bandName" placeholder="例如：Nirvana, Beyond" required maxlength="40">
                 </div>
+                
                 <div class="form-group">
-                    <label for="selectGenre">音樂分區 / 類型</label>
-                    <select id="selectGenre" required>
-                        <option value="凛として時雨">凛として時雨 (Math Rock / J-Rock)</option>
-                        <option value="My Chemical Romance">My Chemical Romance (Emo / Punk)</option>
-                        <option value="Classic Rock">Classic Rock (經典搖滾)</option>
-                        <option value="Heavy Metal">Heavy Metal (重金屬)</option>
-                        <option value="Alternative">Alternative (另類搖滾)</option>
+                    <label for="song">歌曲名稱 *</label>
+                    <input type="text" id="song" placeholder="例如：Smells Like Teen Spirit" required maxlength="50">
+                </div>
+
+                <div class="form-group">
+                    <label for="category">音樂類別 *</label>
+                    <select id="category" required>
+                        <option value="" disabled selected>-- 選擇風格類別 --</option>
+                        <option value="搖滾">搖滾 (Rock)</option>
+                        <option value="金屬">金屬 (Metal)</option>
+                        <option value="流行">流行 (Pop)</option>
+                        <option value="其他">其他 (Other)</option>
                     </select>
                 </div>
+
                 <div class="form-group">
-                    <label for="inputContent">留言內容</label>
-                    <textarea id="inputContent" rows="3" required placeholder="分享你對這首歌或樂團的看法..."></textarea>
+                    <label for="content">評論看法 (限 150 字) *</label>
+                    <textarea id="content" rows="4" placeholder="分享你對這首歌或樂隊的看法..." required maxlength="150" oninput="updateCharCount()"></textarea>
+                    <span class="char-counter" id="charCounter">0 / 150</span>
                 </div>
-                <button type="submit">發送搖滾宣言</button>
+                
+                <button type="submit" class="submit-btn"><i class="fa-solid fa-paper-plane"></i> 發送評論</button>
             </form>
         </div>
 
-        <!-- 進階功能：資料視覺化統計圖表 (純 HTML/CSS 繪製) -->
-        <div class="chart-section">
-            <div class="chart-title">📊 樂團/曲風討論熱度統計</div>
-            <div id="visualizationContainer">
-                <!-- 由 JavaScript 動態繪製 -->
+        <div>
+            <div class="search-sort-bar">
+                <div class="search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="搜尋樂隊、歌名或評論內容..." oninput="applyFiltersAndRender()">
+                </div>
+                <div class="sort-wrapper">
+                    <label style="margin: 0;" for="sortSelect">排序：</label>
+                    <select id="sortSelect" style="width: 130px; padding: 6px 10px;" onchange="applyFiltersAndRender()">
+                        <option value="newest">最新發表</option>
+                        <option value="popular">最多共鳴</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-label">審核狀態：</div>
+                    <div class="filter-btn-group" id="statusFilterGroup">
+                        <button class="filter-btn active" onclick="changeStatusFilter('all', this)">全部</button>
+                        <button class="filter-btn" onclick="changeStatusFilter('active', this)">可讀留言 (Active)</button>
+                        <button class="filter-btn" onclick="changeStatusFilter('done', this)">已刪除</button>
+                    </div>
+                </div>
+                <div class="filter-row">
+                    <div class="filter-label">風格篩選：</div>
+                    <div class="filter-btn-group" id="categoryFilterGroup">
+                        <button class="filter-btn active" onclick="changeCategoryFilter('all', this)">全部</button>
+                        <button class="filter-btn" onclick="changeCategoryFilter('搖滾', this)">搖滾</button>
+                        <button class="filter-btn" onclick="changeCategoryFilter('金屬', this)">金屬</button>
+                        <button class="filter-btn" onclick="changeCategoryFilter('流行', this)">流行</button>
+                        <button class="filter-btn" onclick="changeCategoryFilter('其他', this)">其他</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="cardsContainer" class="cards-list">
+                <div class="skeleton-card">
+                    <div style="display:flex; justify-content:space-between;"><div class="skeleton-shimmer" style="width:100px;"></div><div class="skeleton-shimmer" style="width:60px;"></div></div>
+                    <div class="skeleton-shimmer" style="width:80%; height:24px;"></div>
+                    <div class="skeleton-shimmer" style="width:100%; height:40px;"></div>
+                    <div style="display:flex; justify-content:space-between;"><div class="skeleton-shimmer" style="width:120px;"></div><div class="skeleton-shimmer" style="width:140px;"></div></div>
+                </div>
             </div>
         </div>
-
-        <!-- 音樂類型分區切換 Tab -->
-        <div class="genre-tabs" id="genreTabs">
-            <div class="tab active" onclick="filterGenre('All')">全部全部</div>
-            <div class="tab" onclick="filterGenre('凛として時雨')">凛として時雨</div>
-            <div class="tab" onclick="filterGenre('My Chemical Romance')">My Chemical Romance</div>
-            <div class="tab" onclick="filterGenre('Classic Rock')">Classic Rock</div>
-            <div class="tab" onclick="filterGenre('Heavy Metal')">Heavy Metal</div>
-            <div class="tab" onclick="filterGenre('Alternative')">Alternative</div>
-        </div>
-
-        <!-- 留言列表 -->
-        <div class="records-list" id="recordsContainer">
-            <!-- 留言卡片會動態加到這裡 -->
-        </div>
     </div>
+</div>
 
-    <script>
-        // 固定後端網址
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw730I96FUMd6EeXjCEgSi8M38dDe27j1_Oz0tm3PjQnHLG2RkcpqDACtyr09WDaelG9A/exec";
+<script>
+    // ==========================================================================
+    // BACKEND CONNECTOR CONFIGURATION
+    // ==========================================================================
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxb2-PBAJSiGYeRPsLOM_-xfZe6-glWk8bKJ2PaiUb3zlcRz3hPd-sMpRNPCOTyZMlpww/exec";
+
+    // 全域記憶體資料快取
+    let runtimeRecords = [];
+    let currentStatusFilter = 'all';
+    let currentCategoryFilter = 'all';
+
+    // 頁面初次載入
+    window.addEventListener('DOMContentLoaded', async () => {
+        runtimeRecords = await fetchRecordsFromSheet();
+        applyFiltersAndRender();
+    });
+
+    // 字數限制即時計數
+    function updateCharCount() {
+        const text = document.getElementById('content').value;
+        document.getElementById('charCounter').innerText = `${text.length} / 150`;
+    }
+
+    // 表單提交控制器
+    function handleFormSubmit() {
+        const bandNameInput = document.getElementById('bandName');
+        const songInput = document.getElementById('song');
+        const categoryInput = document.getElementById('category');
+        const contentInput = document.getElementById('content');
+
+        const formData = {
+            bandName: bandNameInput.value.trim(),
+            song: songInput.value.trim(),
+            category: categoryInput.value,
+            content: contentInput.value.trim()
+        };
+
+        // 建立新資料
+        const newRecord = createRecord(formData);
         
-        // 全域資料快取與過濾狀態
-        let allRecords = [];
-        let currentFilterGenre = "All";
+        // 儲存到快取、LocalStorage 並上傳雲端
+        saveData(newRecord);
 
-        // 網頁載入後自動讀取資料
-        window.addEventListener('DOMContentLoaded', loadData);
+        // 重設輸入表單與計數器
+        bandNameInput.value = '';
+        songInput.value = '';
+        categoryInput.value = '';
+        contentInput.value = '';
+        document.getElementById('charCounter').innerText = "0 / 150";
 
-        // --- 1. Load Data (讀取) ---
-        function loadData() {
-            fetch(APPS_SCRIPT_URL)
-                .then(response => response.json())
-                .then(data => {
-                    allRecords = Array.isArray(data) ? data : (data.records || []);
-                    renderRecords(allRecords);
-                    renderVisualization(allRecords);
-                })
-                .catch(err => console.error("讀取資料失敗:", err));
+        // 前端畫面即時更新
+        applyFiltersAndRender();
+    }
+
+    // 集中處理篩選與排序，並將結果餵入 renderList
+    function applyFiltersAndRender() {
+        let filtered = [...runtimeRecords];
+
+        // 1. 關鍵字搜尋 (包含 樂隊、歌名、評論內容)
+        const query = document.getElementById('searchInput').value.trim().toLowerCase();
+        if (query) {
+            filtered = filtered.filter(r => 
+                r.bandName.toLowerCase().includes(query) ||
+                r.song.toLowerCase().includes(query) ||
+                r.content.toLowerCase().includes(query)
+            );
         }
 
-        // --- 2. Render Records (渲染面板與過濾邏輯) ---
-        function renderRecords(records) {
-            const container = document.getElementById('recordsContainer');
-            container.innerHTML = '';
-
-            records.forEach(item => {
-                // 自動隱藏已被標記為刪除的留言
-                if (item.isDeleted === true || item.isDeleted === "true") {
-                    return; 
-                }
-
-                // 音樂類型分區前端過濾篩選
-                if (currentFilterGenre !== "All" && item.genre !== currentFilterGenre) {
-                    return;
-                }
-
-                // 建立卡片元素
-                const card = document.createElement('div');
-                card.className = 'comment-card';
-                
-                // 解析狀態
-                const isApproved = item.status === undefined ? true : (item.status === true || item.status === "true" || item.status === "已核准");
-
-                card.innerHTML = `
-                    <div class="card-header">
-                        <div>
-                            <!-- 留言者可改名功能 -->
-                            <input type="text" class="author-input" value="${item.author || '無名搖滾客'}" 
-                                onblur="updateAuthorName('${item.id}', this.value)" title="點擊可直接修改暱稱">
-                        </div>
-                        <span class="genre-badge">${item.genre || '未分類'}</span>
-                    </div>
-                    <div class="comment-content">${item.content || ''}</div>
-                    <div class="card-footer">
-                        <span>${item.timestamp ? new Date(item.timestamp).toLocaleString() : ''}</span>
-                        
-                        <!-- Status Toggle 狀態切換器 -->
-                        <div class="status-toggle-container">
-                            <span class="status-label">${isApproved ? '🎵 演出中' : '💤 休息中'}</span>
-                            <label class="switch">
-                                <input type="checkbox" ${isApproved ? 'checked' : ''} 
-                                    onchange="toggleStatus('${item.id}', ${isApproved})">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
+        // 2. 狀態篩選 (all / active / done)
+        if (currentStatusFilter !== 'all') {
+            filtered = filtered.filter(r => r.status === currentStatusFilter);
         }
 
-        // --- 3. 資料視覺化渲染 (Pure HTML/CSS) ---
-        function renderVisualization(records) {
-            const chartContainer = document.getElementById('visualizationContainer');
-            chartContainer.innerHTML = '';
-
-            // 統計各類型的數量
-            const genres = ['凛として時雨', 'My Chemical Romance', 'Classic Rock', 'Heavy Metal', 'Alternative'];
-            const counts = {};
-            genres.forEach(g => counts[g] = 0);
-            
-            let maxCount = 0;
-            records.forEach(item => {
-                if (counts[item.genre] !== undefined && !(item.isDeleted === true || item.isDeleted === "true")) {
-                    counts[item.genre]++;
-                    if (counts[item.genre] > maxCount) {
-                        maxCount = counts[item.genre];
-                    }
-                }
-            });
-
-            // 繪製條形圖
-            genres.forEach(g => {
-                const count = counts[g];
-                const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
-
-                const row = document.createElement('div');
-                row.className = 'bar-container';
-                row.innerHTML = `
-                    <div class="bar-label">${g}</div>
-                    <div class="bar-track">
-                        <div class="bar-fill" style="width: ${percentage}%"></div>
-                    </div>
-                    <div class="bar-value">${count}</div>
-                `;
-                chartContainer.appendChild(row);
-            });
+        // 3. 分類風格篩選 (all / 搖滾 / 金屬 / 流行 / 其他)
+        if (currentCategoryFilter !== 'all') {
+            filtered = filtered.filter(r => r.category === currentCategoryFilter);
         }
 
-        // --- 4. 表單提交處理與 Save ---
-        function handleFormSubmit(event) {
-            event.preventDefault();
-            const author = document.getElementById('inputAuthor').value;
-            const genre = document.getElementById('selectGenre').value;
-            const content = document.getElementById('inputContent').value;
-            const id = 'id_' + Date.now();
-
-            const newRecord = {
-                id: id,
-                author: author,
-                genre: genre,
-                content: content,
-                status: "已核准",
-                isDeleted: false,
-                timestamp: new Date().toISOString()
-            };
-
-            allRecords.unshift(newRecord);
-            renderRecords(allRecords);
-            renderVisualization(allRecords);
-
-            document.getElementById('inputContent').value = '';
-
-            syncToSheet({
-                action: "insert",
-                record: newRecord
+        // 4. 排序方式篩選 (最新發表 / 最多共鳴)
+        const sortBy = document.getElementById('sortSelect').value;
+        if (sortBy === 'popular') {
+            // 最多共鳴排序（按讚數由多到少），讚數相同則按時間新到舊
+            filtered.sort((a, b) => {
+                const diff = (b.likes || 0) - (a.likes || 0);
+                return diff !== 0 ? diff : new Date(b.createdAt) - new Date(a.createdAt);
             });
+        } else {
+            // 預設最新發表（時間由新到舊）
+            filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         }
 
-        // --- 5. 狀態切換功能 (Status Toggle) ---
-        function toggleStatus(id, currentStatus) {
-            const newStatus = currentStatus ? "休息中" : "已核准";
-            
-            const record = allRecords.find(item => item.id === id);
-            if (record) {
-                record.status = newStatus;
-                renderRecords(allRecords);
+        renderList(filtered);
+    }
+
+    // 更新狀態篩選鈕 UI
+    function changeStatusFilter(value, element) {
+        document.querySelectorAll('#statusFilterGroup .filter-btn').forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
+        currentStatusFilter = value;
+        applyFiltersAndRender();
+    }
+
+    // 更新類別篩選鈕 UI
+    function changeCategoryFilter(value, element) {
+        document.querySelectorAll('#categoryFilterGroup .filter-btn').forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
+        currentCategoryFilter = value;
+        applyFiltersAndRender();
+    }
+
+
+    /* ==========================================================================
+       核心 Data 處理與後端同步 Function 
+       ========================================================================== */
+
+    // 優化：向後端同步 POST 請求
+    async function syncToSheet(payload) {
+        try {
+            // 💡 [修正重點]：雙重映射 Likes 以防止部分舊 GAS 找不到 likes 欄位
+            if (payload.action === "update" && payload.changes && payload.changes.likes !== undefined) {
+                payload.changes["共鳴數"] = payload.changes.likes; // 同時加上中文 key 作為保險
             }
 
-            syncToSheet({ 
-                action: "update", 
-                id: id, 
-                changes: { status: newStatus } 
-            });
-        }
-
-        // --- 6. 留言者姓名修改功能 ---
-        function updateAuthorName(id, newName) {
-            if (!newName.trim()) return;
-
-            const record = allRecords.find(item => item.id === id);
-            if (record && record.author !== newName) {
-                record.author = newName;
-                renderRecords(allRecords);
-                
-                syncToSheet({
-                    action: "update",
-                    id: id,
-                    changes: { author: newName }
-                });
-            }
-        }
-
-        // --- 7. 前端分區 Filter 切換控制 ---
-        function filterGenre(genreName) {
-            currentFilterGenre = genreName;
-            
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                if (tab.innerText === genreName || (genreName === 'All' && tab.innerText === '全部全部')) {
-                    tab.classList.add('active');
-                } else {
-                    tab.classList.remove('active');
-                }
-            });
-            
-            renderRecords(allRecords);
-        }
-
-        // --- 8. Sync To Sheet (後端資料庫同步核心) ---
-        function syncToSheet(payload) {
-            fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+            const response = await fetch(APPS_SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain" },
                 body: JSON.stringify(payload)
-            })
-            .then(() => {
-                console.log("後端同步成功:", payload.action);
-            })
-            .catch(err => console.error("後端同步失敗:", err));
+            });
+            const resData = await response.json();
+            if (!resData.ok) {
+                console.warn("Google Sheet 同步失敗:", resData.error);
+                setConnectionStatus(false, "雲端寫入失敗，已暫存至本地");
+            } else {
+                setConnectionStatus(true, "雲端資料同步成功");
+            }
+        } catch (err) {
+            console.error("網路同步異常:", err);
+            setConnectionStatus(false, "網路連線異常，已暫存至本地");
         }
-    </script>
+    }
+
+    // 讀取遠端試算表完整評論
+    async function fetchRecordsFromSheet() {
+        try {
+            const response = await fetch(APPS_SCRIPT_URL);
+            const data = await response.json();
+            if (data.ok && Array.isArray(data.records)) {
+                const normalized = data.records.map(r => normalizeRecord(r));
+                localStorage.setItem('records', JSON.stringify(normalized));
+                setConnectionStatus(true, "🟢 雲端資料庫連線正常");
+                return normalized;
+            } else {
+                setConnectionStatus(false, "⚠️ 後端讀取異常，切換至本機暫存");
+            }
+        } catch (err) {
+            setConnectionStatus(false, "⚠️ 無法連線至 Google 試算表 (目前為離線備份模式)");
+        }
+        return getLocalStorageFallback();
+    }
+
+    // 更新狀態燈號指示器
+    function setConnectionStatus(isOnline, text) {
+        const dot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        if (isOnline) {
+            dot.className = "status-dot online";
+        } else {
+            dot.className = "status-dot offline";
+        }
+        statusText.innerText = text;
+    }
+
+    // 將 Sheet 欄位標頭清洗對照回前端規範的 Key
+    function normalizeRecord(record) {
+        return {
+            id: String(record["系統ID"] || record.id || ""),
+            createdAt: String(record["建立時間"] || record.createdAt || new Date().toISOString()),
+            status: String(record["狀態"] || record.status || "active"),
+            bandName: String(record["樂隊名稱"] || record.bandName || ""),
+            song: String(record["歌曲名稱"] || record.song || ""),
+            category: String(record["音樂風格"] || record.category || "其他"),
+            content: String(record["評論內容"] || record.content || ""),
+            likes: Number(record["共鳴數"] !== undefined ? record["共鳴數"] : (record.likes || 0))
+        };
+    }
+
+    // 輔助函式：獲取本地緩存
+    function getLocalStorageFallback() {
+        const rawData = localStorage.getItem('records');
+        return rawData ? JSON.parse(rawData) : [];
+    }
+
+    // 1. 建立一筆 Record 物件 (createRecord)
+    function createRecord(formData) {
+        return {
+            id: Date.now() + "_" + Math.random().toString(36).substr(2, 5),
+            createdAt: new Date().toISOString(),
+            status: 'active',
+            bandName: formData.bandName,
+            song: formData.song,
+            category: formData.category,
+            content: formData.content,
+            likes: 0
+        };
+    }
+
+    // 2. 新增 record 並儲存到快取與 localStorage (saveData)
+    function saveData(record) {
+        runtimeRecords.push(record);
+        localStorage.setItem('records', JSON.stringify(runtimeRecords));
+        
+        // 發送異動至 Sheet 後端
+        syncToSheet({ action: "create", record });
+    }
+
+    // 3. 從暫存快取或離線庫讀取 records 陣列 (loadData)
+    function loadData() {
+        return runtimeRecords.length > 0 ? runtimeRecords : getLocalStorageFallback();
+    }
+
+    // 4. 更新單筆資料內容並存回儲存層 (updateRecord)
+    function updateRecord(id, changes) {
+        const index = runtimeRecords.findIndex(r => r.id === id);
+        
+        if (index !== -1) {
+            // 前端執行合併變更
+            runtimeRecords[index] = { ...runtimeRecords[index], ...changes };
+            localStorage.setItem('records', JSON.stringify(runtimeRecords));
+            
+            // 畫面即時動態重繪
+            applyFiltersAndRender();
+            
+            // 發送 update 指令同步雲端
+            syncToSheet({ action: "update", id, changes });
+        }
+    }
+
+    // 5. 動態渲染卡片列表 (renderList)
+    function renderList(recordsToShow) {
+        const container = document.getElementById('cardsContainer');
+        container.innerHTML = ''; 
+
+        if (recordsToShow.length === 0) {
+            container.innerHTML = `
+                <div class="no-records">
+                    <i class="fa-regular fa-comment-dots" style="font-size: 2rem; margin-bottom: 10px; color: var(--rock-red);"></i>
+                    <p>目前沒有任何符合篩選條件的樂隊評論。</p>
+                </div>`;
+            return;
+        }
+
+        recordsToShow.forEach(record => {
+            const card = document.createElement('div');
+            card.className = `comment-card ${record.status === 'done' ? 'is-done' : ''}`;
+
+            const formattedTime = new Date(record.createdAt).toLocaleString();
+            const badgeText = record.status === 'done' ? '已刪除' : 'Active';
+            const actionStatusIcon = record.status === 'done' ? 'fa-rotate-left' : 'fa-trash-can';
+            const actionStatusText = record.status === 'done' ? '復原' : '刪除言論';
+            const nextStatus = record.status === 'done' ? 'active' : 'done';
+            
+            const currentLikes = record.likes || 0;
+
+            // 💡 [補齊被截斷處]：建立完整的點讚手勢按鈕與邏輯狀態切換鈕
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="band-tag"><i class="fa-solid fa-guitar"></i> ${record.bandName}</span>
+                    <span class="status-badge">${badgeText}</span>
+                </div>
+                
+                <div class="song-title">
+                    <i class="fa-solid fa-music" style="color: var(--neon-cyan); font-size: 1rem;"></i> 
+                    ${record.song} 
+                    <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">[${record.category}]</span>
+                </div>
+                <div class="review-content">${record.content}</div>
+                
+                <div class="card-footer">
+                    <div class="meta-info">
+                        <i class="fa-regular fa-clock"></i> ${formattedTime}
+                    </div>
+                    <div class="action-group">
+                        <button class="action-btn btn-like" onclick="updateRecord('${record.id}', { likes: ${currentLikes + 1} })">
+                            <i class="fa-solid fa-hand-rock"></i> 共鳴 (${currentLikes})
+                        </button>
+                        <button class="action-btn btn-status" onclick="updateRecord('${record.id}', { status: '${nextStatus}' })">
+                            <i class="fa-solid ${actionStatusIcon}"></i> ${actionStatusText}
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+</script>
 </body>
 </html>

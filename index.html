@@ -1,9 +1,11 @@
+:🎸 LiveStage 樂隊評論區 - 搖滾樂迷殿堂:index.html
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎸 LiveStage 樂隊評論區 - 搖滾樂迷殿堂</title>
+    <!-- 引入 FontAwesome 圖標庫與 Google 歐文字體提升質感 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -392,17 +394,30 @@
             margin-bottom: 12px;
         }
 
-        .band-tag {
-            font-size: 0.85rem;
-            background: rgba(23, 222, 219, 0.12);
+        /* 改名可編輯輸入框樣式 */
+        .band-name-input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px dashed transparent;
             color: var(--neon-cyan);
-            padding: 4px 12px;
-            border-radius: 8px;
+            font-size: 0.85rem;
             font-weight: 700;
-            border: 1px solid rgba(23, 222, 219, 0.2);
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            padding: 2px 4px;
+            border-radius: 4px;
+            width: 150px;
+            transition: all 0.3s;
+        }
+
+        .band-name-input:hover {
+            border-bottom-color: var(--neon-cyan);
+            background: rgba(23, 222, 219, 0.1);
+        }
+
+        .band-name-input:focus {
+            outline: none;
+            border-bottom-style: solid;
+            border-bottom-color: var(--neon-cyan);
+            background: rgba(23, 222, 219, 0.15);
         }
 
         .status-badge {
@@ -433,7 +448,6 @@
             margin-bottom: 10px;
             display: flex;
             align-items: center;
-            justify-content: flex-start;
             gap: 8px;
         }
 
@@ -553,6 +567,111 @@
             border-radius: 16px;
             border: 2px dashed rgba(255,255,255,0.1);
         }
+
+        /* --- 5. 音樂類型分區 (示範推薦看板) --- */
+        .recommendation-panel {
+            background: linear-gradient(135deg, rgba(23, 222, 219, 0.05) 0%, rgba(255, 56, 56, 0.05) 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(12px);
+        }
+
+        .rec-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        @media (min-width: 600px) {
+            .rec-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .rec-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s;
+        }
+
+        .rec-card:hover {
+            border-color: var(--neon-cyan);
+            transform: translateY(-2px);
+        }
+
+        .rec-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-light);
+            margin-bottom: 6px;
+        }
+
+        .rec-tag {
+            font-size: 0.72rem;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        /* --- 進階功能: 資料視覺化統計圖表 --- */
+        .chart-section {
+            background: var(--panel-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(12px);
+        }
+
+        .chart-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .chart-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .chart-label {
+            width: 80px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--text-muted);
+        }
+
+        .chart-bar-wrapper {
+            flex-grow: 1;
+            background: rgba(0, 0, 0, 0.4);
+            height: 12px;
+            border-radius: 6px;
+            margin: 0 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chart-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-cyan) 0%, var(--rock-red) 100%);
+            width: 0%;
+            border-radius: 6px;
+            transition: width 0.8s cubic-bezier(0.1, 1, 0.1, 1);
+        }
+
+        .chart-val {
+            width: 50px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-align: right;
+            color: var(--text-light);
+        }
     </style>
 </head>
 <body>
@@ -562,24 +681,55 @@
         <h1>🎸 LiveStage 樂隊評論區</h1>
         <p>樂迷集結地！在這裡分享你對樂隊、新歌的獨到看法，寫下最真誠的評論！</p>
         
+        <!-- 連線狀態燈 -->
         <div class="status-indicator">
             <span class="status-dot" id="statusDot"></span>
             <span id="statusText">正在同步雲端資料庫...</span>
         </div>
     </header>
 
+    <!-- 5. 音樂類型分區示範與推薦 -->
+    <section class="recommendation-panel">
+        <h2><i class="fa-solid fa-guitar"></i> 焦點樂風分區推薦</h2>
+        <div class="rec-grid">
+            <div class="rec-card">
+                <div class="rec-title">凛として時雨 (Ling Tosite Sigure)</div>
+                <span class="rec-tag" style="background: rgba(23, 222, 219, 0.15); color: var(--neon-cyan);">搖滾 J-Rock</span>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    高亢男女雙主唱編制，搭配複雜狂暴的 Math Rock 吉他亂序過載。推薦歌曲：《unravel》。
+                </p>
+            </div>
+            <div class="rec-card">
+                <div class="rec-title">My Chemical Romance (MCR)</div>
+                <span class="rec-tag" style="background: rgba(255, 56, 56, 0.15); color: var(--rock-red);">流行 Pop-Punk / Emo</span>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    2000年代情緒硬核與龐克救世天團，戲劇般的概念專輯重塑經典。推薦歌曲：《Welcome to the Black Parade》。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 進階功能: 資料視覺化曲風討論統計 (純前端 HTML/CSS 圖表) -->
+    <section class="chart-section">
+        <h2><i class="fa-solid fa-chart-bar"></i> 樂評風格討論統計摘要</h2>
+        <div id="genreChartContainer" style="margin-top: 15px;">
+            <!-- 由 JS 動態產生 -->
+        </div>
+    </section>
+
     <div class="main-layout">
+        <!-- 評論輸入面板 -->
         <div class="card-panel glass-panel">
             <h2><i class="fa-solid fa-pen-fancy"></i> 發表新評論</h2>
             <form id="commentForm" onsubmit="event.preventDefault(); handleFormSubmit();">
                 <div class="form-group">
                     <label for="bandName">樂隊名稱 *</label>
-                    <input type="text" id="bandName" placeholder="例如：Nirvana, Beyond" required maxlength="40">
+                    <input type="text" id="bandName" placeholder="例如：凛として時雨, Beyond" required maxlength="40">
                 </div>
                 
                 <div class="form-group">
                     <label for="song">歌曲名稱 *</label>
-                    <input type="text" id="song" placeholder="例如：Smells Like Teen Spirit" required maxlength="50">
+                    <input type="text" id="song" placeholder="例如：unravel, 喜歡妳" required maxlength="50">
                 </div>
 
                 <div class="form-group">
@@ -595,7 +745,7 @@
 
                 <div class="form-group">
                     <label for="content">評論看法 (限 150 字) *</label>
-                    <textarea id="content" rows="4" placeholder="分享你對這首歌或樂隊的看法..." required maxlength="150" oninput="updateCharCount()"></textarea>
+                    <textarea id="content" rows="4" placeholder="分享你對這首歌或樂隊的看法（例如：MCR這首歌的前奏吉他與鋼琴太有神聖感...）" required maxlength="150" oninput="updateCharCount()"></textarea>
                     <span class="char-counter" id="charCounter">0 / 150</span>
                 </div>
                 
@@ -603,7 +753,9 @@
             </form>
         </div>
 
+        <!-- 評論流與篩選面板 -->
         <div>
+            <!-- 工具列：搜尋與排序 -->
             <div class="search-sort-bar">
                 <div class="search-wrapper">
                     <i class="fa-solid fa-magnifying-glass"></i>
@@ -618,6 +770,7 @@
                 </div>
             </div>
 
+            <!-- 雙重篩選控制列 -->
             <div class="filter-section">
                 <div class="filter-row">
                     <div class="filter-label">審核狀態：</div>
@@ -639,7 +792,9 @@
                 </div>
             </div>
 
+            <!-- 動態卡片容器 -->
             <div id="cardsContainer" class="cards-list">
+                <!-- 預設顯示骨架屏以提升使用者體驗 -->
                 <div class="skeleton-card">
                     <div style="display:flex; justify-content:space-between;"><div class="skeleton-shimmer" style="width:100px;"></div><div class="skeleton-shimmer" style="width:60px;"></div></div>
                     <div class="skeleton-shimmer" style="width:80%; height:24px;"></div>
@@ -653,7 +808,7 @@
 
 <script>
     // ==========================================================================
-    // BACKEND CONNECTOR CONFIGURATION
+    // BACKEND CONNECTOR CONFIGURATION (100% 保留原本 URL 不變)
     // ==========================================================================
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxb2-PBAJSiGYeRPsLOM_-xfZe6-glWk8bKJ2PaiUb3zlcRz3hPd-sMpRNPCOTyZMlpww/exec";
 
@@ -662,7 +817,7 @@
     let currentStatusFilter = 'all';
     let currentCategoryFilter = 'all';
 
-    // 頁面初次載入
+    // 頁面初次載入：優先連後端，失敗則 Fallback 到 LocalStorage 備用快取
     window.addEventListener('DOMContentLoaded', async () => {
         runtimeRecords = await fetchRecordsFromSheet();
         applyFiltersAndRender();
@@ -688,10 +843,10 @@
             content: contentInput.value.trim()
         };
 
-        // 建立新資料
+        // 建立符合 Data Contract 格式新資料
         const newRecord = createRecord(formData);
         
-        // 儲存到快取、LocalStorage 並上傳雲端
+        // 儲存到本地快取與 LocalStorage
         saveData(newRecord);
 
         // 重設輸入表單與計數器
@@ -701,30 +856,35 @@
         contentInput.value = '';
         document.getElementById('charCounter').innerText = "0 / 150";
 
-        // 前端畫面即時更新
         applyFiltersAndRender();
     }
 
-    // 集中處理篩選與排序，並將結果餵入 renderList
+    // 集中過濾、搜尋排序並進行重繪渲染
     function applyFiltersAndRender() {
         let filtered = [...runtimeRecords];
+
+        // 4. 增加功能：自動隱藏（Hide）已被標記為已刪除的留言 (篩選階段)
+        // 當狀態篩選非 active/done 時，配合工具列篩選排除
+        if (currentStatusFilter === 'active') {
+            filtered = filtered.filter(r => r.status === 'active');
+        } else if (currentStatusFilter === 'done') {
+            filtered = filtered.filter(r => r.status === 'done');
+        } else {
+            // "全部" 模式：預設隱藏已刪除（done）的留言，僅展示 active 
+            filtered = filtered.filter(r => r.status !== 'done');
+        }
 
         // 1. 關鍵字搜尋 (包含 樂隊、歌名、評論內容)
         const query = document.getElementById('searchInput').value.trim().toLowerCase();
         if (query) {
             filtered = filtered.filter(r => 
-                r.bandName.toLowerCase().includes(query) ||
-                r.song.toLowerCase().includes(query) ||
-                r.content.toLowerCase().includes(query)
+                (r.bandName && r.bandName.toLowerCase().includes(query)) ||
+                (r.song && r.song.toLowerCase().includes(query)) ||
+                (r.content && r.content.toLowerCase().includes(query))
             );
         }
 
-        // 2. 狀態篩選 (all / active / done)
-        if (currentStatusFilter !== 'all') {
-            filtered = filtered.filter(r => r.status === currentStatusFilter);
-        }
-
-        // 3. 分類風格篩選 (all / 搖滾 / 金屬 / 流行 / 其他)
+        // 3. 分類風格篩選
         if (currentCategoryFilter !== 'all') {
             filtered = filtered.filter(r => r.category === currentCategoryFilter);
         }
@@ -732,17 +892,16 @@
         // 4. 排序方式篩選 (最新發表 / 最多共鳴)
         const sortBy = document.getElementById('sortSelect').value;
         if (sortBy === 'popular') {
-            // 最多共鳴排序（按讚數由多到少），讚數相同則按時間新到舊
             filtered.sort((a, b) => {
                 const diff = (b.likes || 0) - (a.likes || 0);
                 return diff !== 0 ? diff : new Date(b.createdAt) - new Date(a.createdAt);
             });
         } else {
-            // 預設最新發表（時間由新到舊）
             filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         }
 
         renderList(filtered);
+        renderVisualization(runtimeRecords); // 全域實時更新數據圖表
     }
 
     // 更新狀態篩選鈕 UI
@@ -753,7 +912,7 @@
         applyFiltersAndRender();
     }
 
-    // 更新類別篩選鈕 UI
+    // 更新類別風格篩選鈕 UI
     function changeCategoryFilter(value, element) {
         document.querySelectorAll('#categoryFilterGroup .filter-btn').forEach(btn => btn.classList.remove('active'));
         element.classList.add('active');
@@ -763,15 +922,23 @@
 
 
     /* ==========================================================================
-       核心 Data 處理與後端同步 Function 
+       核心 Data 處理與後端同步 Function (完美保留當初中文映射，不碰後端)
        ========================================================================== */
 
     // 優化：向後端同步 POST 請求
     async function syncToSheet(payload) {
         try {
-            // 💡 [修正重點]：雙重映射 Likes 以防止部分舊 GAS 找不到 likes 欄位
-            if (payload.action === "update" && payload.changes && payload.changes.likes !== undefined) {
-                payload.changes["共鳴數"] = payload.changes.likes; // 同時加上中文 key 作為保險
+            // 💡 [修正重點]：雙重映射以確保相容舊 GAS 寫入機制 (likes 映射 共鳴數)
+            if (payload.action === "update" && payload.changes) {
+                if (payload.changes.likes !== undefined) {
+                    payload.changes["共鳴數"] = payload.changes.likes; 
+                }
+                if (payload.changes.status !== undefined) {
+                    payload.changes["狀態"] = payload.changes.status; 
+                }
+                if (payload.changes.bandName !== undefined) {
+                    payload.changes["樂隊名稱"] = payload.changes.bandName; 
+                }
             }
 
             const response = await fetch(APPS_SCRIPT_URL, {
@@ -815,15 +982,17 @@
     function setConnectionStatus(isOnline, text) {
         const dot = document.getElementById('statusDot');
         const statusText = document.getElementById('statusText');
-        if (isOnline) {
-            dot.className = "status-dot online";
-        } else {
-            dot.className = "status-dot offline";
+        if (dot && statusText) {
+            if (isOnline) {
+                dot.className = "status-dot online";
+            } else {
+                dot.className = "status-dot offline";
+            }
+            statusText.innerText = text;
         }
-        statusText.innerText = text;
     }
 
-    // 將 Sheet 欄位標頭清洗對照回前端規範的 Key
+    // 💡 [不更動原本 Mapping 機制]：將試算表的中文欄位精準洗回純前端屬性
     function normalizeRecord(record) {
         return {
             id: String(record["系統ID"] || record.id || ""),
@@ -837,13 +1006,13 @@
         };
     }
 
-    // 輔助函式：獲取本地緩存
+    // 輔助函式：獲取本地快取離線緩存
     function getLocalStorageFallback() {
         const rawData = localStorage.getItem('records');
         return rawData ? JSON.parse(rawData) : [];
     }
 
-    // 1. 建立一筆 Record 物件 (createRecord)
+    // 1. 建立符合 Data Contract 格式的 Record 物件 (createRecord)
     function createRecord(formData) {
         return {
             id: Date.now() + "_" + Math.random().toString(36).substr(2, 5),
@@ -862,7 +1031,7 @@
         runtimeRecords.push(record);
         localStorage.setItem('records', JSON.stringify(runtimeRecords));
         
-        // 發送異動至 Sheet 後端
+        // 異動發送至後端 Google Sheet
         syncToSheet({ action: "create", record });
     }
 
@@ -883,8 +1052,59 @@
             // 畫面即時動態重繪
             applyFiltersAndRender();
             
-            // 發送 update 指令同步雲端
+            // 💡 遵守進階規範 4：切換狀態/點讚/改名更新後，必須呼叫 syncToSheet
             syncToSheet({ action: "update", id, changes });
+        }
+    }
+
+    // --- 進階功能: 資料視覺化 (純前端 HTML/CSS 繪製討論柱狀圖，不寫入 Sheet，不調用外部 key) ---
+    function renderVisualization(records) {
+        const chartContainer = document.getElementById('genreChartContainer');
+        if (!chartContainer) return;
+
+        // 計算風格出現次數 (僅過濾 active 狀態，相容 hide 刪除機制)
+        const categories = ["搖滾", "金屬", "流行", "其他"];
+        const counts = { "搖滾": 0, "金屬": 0, "流行": 0, "其他": 0 };
+        
+        let activeTotal = 0;
+        records.forEach(r => {
+            if (r.status !== 'done') {
+                const catKey = counts[r.category] !== undefined ? r.category : "其他";
+                counts[catKey]++;
+                activeTotal++;
+            }
+        });
+
+        // 取出最大討論度作為 100% 基準線
+        const maxVal = Math.max(...Object.values(counts));
+
+        chartContainer.innerHTML = '';
+        categories.forEach(cat => {
+            const count = counts[cat];
+            const pct = maxVal > 0 ? Math.round((count / maxVal) * 100) : 0;
+            const displayPct = activeTotal > 0 ? Math.round((count / activeTotal) * 100) : 0;
+
+            const row = document.createElement('div');
+            row.className = 'chart-row';
+            row.innerHTML = `
+                <div class="chart-label">${cat}</div>
+                <div class="chart-bar-wrapper">
+                    <div class="chart-bar" style="width: ${pct}%"></div>
+                </div>
+                <div class="chart-val">${count} 篇 (${displayPct}%)</div>
+            `;
+            chartContainer.appendChild(row);
+        });
+    }
+
+    // 7. 加5功能 - 留言者可原地改名同步雲端
+    function updateBandNameOnBlur(id, newName) {
+        const cleanedName = newName.trim();
+        if (!cleanedName) return;
+
+        const record = runtimeRecords.find(r => r.id === id);
+        if (record && record.bandName !== cleanedName) {
+            updateRecord(id, { bandName: cleanedName });
         }
     }
 
@@ -914,10 +1134,15 @@
             
             const currentLikes = record.likes || 0;
 
-            // 💡 [補齊被截斷處]：建立完整的點讚手勢按鈕與邏輯狀態切換鈕
+            // 💡 [補齊最初程式碼漏洞與截斷]
+            // 將「樂隊名稱」替換為一個可就地修改並同步後端（7. 加5功能）的 Input
             card.innerHTML = `
                 <div class="card-header">
-                    <span class="band-tag"><i class="fa-solid fa-guitar"></i> ${record.bandName}</span>
+                    <span class="band-tag">
+                        <i class="fa-solid fa-guitar"></i> 
+                        <input type="text" class="band-name-input" value="${record.bandName || '匿名樂迷'}" 
+                               onblur="updateBandNameOnBlur('${record.id}', this.value)" title="點擊即可修改暱稱並同步雲端">
+                    </span>
                     <span class="status-badge">${badgeText}</span>
                 </div>
                 
@@ -933,9 +1158,11 @@
                         <i class="fa-regular fa-clock"></i> ${formattedTime}
                     </div>
                     <div class="action-group">
+                        <!-- 按讚 (+1) 搖滾手勢按鈕 -->
                         <button class="action-btn btn-like" onclick="updateRecord('${record.id}', { likes: ${currentLikes + 1} })">
                             <i class="fa-solid fa-hand-rock"></i> 共鳴 (${currentLikes})
                         </button>
+                        <!-- 進階功能: Status Toggle 軟刪除/復原切換 -->
                         <button class="action-btn btn-status" onclick="updateRecord('${record.id}', { status: '${nextStatus}' })">
                             <i class="fa-solid ${actionStatusIcon}"></i> ${actionStatusText}
                         </button>

@@ -3,32 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rock Verse Master | 搖滾音樂評論誌</title>
+    <title>Rock Verse Lite | 搖滾音樂評論誌</title>
     <style>
-        /* --- 視覺外觀：保留重金屬地下Livehouse風格 --- */
+        /* --- 視覺外觀升級：高級深色搖滾霓虹風 --- */
         :root {
-            --bg-color: #0b0c10;
-            --surface-color: #1f2833;
-            --surface-light: #2c3540;
-            --primary-color: #66fcf1; /* 酷炫電光藍 */
-            --danger-color: #ff0055;  /* 龐克血紅 */
-            --text-main: #e0e6ed;     /* 提升字體亮度，更清晰 */
-            --text-light: #ffffff;
-            --text-muted: #57beb9;    /* 優化可讀性高對比色 */
+            --bg-color: #0a0c10;
+            --surface-color: #121620;
+            --surface-light: #1a1f2c;
+            --primary-color: #ff2a5f; /* 霓虹搖滾紅 */
+            --primary-hover: #e01f4f;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
             
-            /* 四大音樂曲風專屬霓虹色 */
-            --color-rock: #00f2fe;    /* 凛として時雨 / MCR - 經典搖滾藍 */
-            --color-metal: #ff0055;   /* Slipknot - 狂暴金屬紅 */
-            --color-punk: #ff9f43;    /* Green Day - 經典龐克橘 */
-            --color-indie: #10ac84;   /* Radiohead - 復古獨立綠 */
+            /* 四大音樂分區專屬配色 */
+            --accent-jrock: #00f2fe;   /* 凛として時雨 冰藍 */
+            --accent-emo: #b92bff;     /* My Chemical Romance 華麗紫 */
+            --accent-metal: #ff9f43;   /* Heavy Metal 烈焰橘 */
+            --accent-indie: #10ac84;   /* Indie Rock 復古綠 */
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            /* 調整：換成最清晰、易讀的無襯線現代字體系統 */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
         }
 
         body {
@@ -36,80 +34,74 @@
             color: var(--text-main);
             line-height: 1.6;
             padding: 30px 20px;
-            background-image: linear-gradient(rgba(11, 12, 16, 0.96), rgba(11, 12, 16, 0.96)), 
-                              url('https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?auto=format&fit=crop&w=1200&q=80');
-            background-size: cover;
+            background-image: radial-gradient(circle at 20% 30%, #161a2e 0%, #0a0c10 70%);
             background-attachment: fixed;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
         header {
             text-align: center;
-            padding: 60px 0;
-            border-bottom: 2px dashed rgba(102, 252, 241, 0.3);
-            margin-bottom: 40px;
+            padding: 50px 0;
+            position: relative;
+            background: linear-gradient(180deg, rgba(255,42,95,0.1) 0%, rgba(0,0,0,0) 100%);
+            border-radius: 12px;
+            margin-bottom: 30px;
         }
 
         header h1 {
-            font-size: 3.5rem;
+            font-size: 3rem;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 4px;
-            color: var(--text-light);
-            /* 調整：微調陰影，確保英文字清晰不模糊 */
-            text-shadow: 2px 2px 0px var(--danger-color), -2px -2px 0px var(--primary-color);
+            background: linear-gradient(45deg, var(--primary-color), #ff758c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255,42,95,0.3);
         }
 
-        header p {
-            color: var(--text-light);
-            font-size: 1.2rem;
-            font-weight: 500;
-            letter-spacing: 2px;
-            margin-top: 15px;
-        }
-
-        /* --- 音樂類型分區 (Rock, Metal, Punk, Indie) --- */
+        /* --- 音樂類型分區 (多樣化擴充 + 圖片示範) --- */
         .section-title {
-            font-size: 1.5rem;
-            font-weight: 800;
+            font-size: 1.3rem;
             margin: 40px 0 20px 0;
-            color: var(--text-light);
-            text-transform: uppercase;
+            padding-left: 10px;
+            border-left: 4px solid var(--primary-color);
             letter-spacing: 1px;
-            border-bottom: 3px solid var(--primary-color);
-            padding-bottom: 5px;
-            display: inline-block;
         }
 
         .genre-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
             margin-bottom: 40px;
         }
 
         .genre-card {
             background: var(--surface-color);
-            border-radius: 6px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             border: 1px solid rgba(255,255,255,0.05);
         }
 
         .genre-card:hover {
-            transform: scale(1.03);
-            box-shadow: 0 15px 30px rgba(102, 252, 241, 0.2);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+            border-color: rgba(255,255,255,0.15);
         }
 
+        /* 樂團圖片示意區 */
         .genre-img-box {
             width: 100%;
-            height: 160px;
-            background: #111;
+            height: 140px;
+            background: #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
             position: relative;
         }
@@ -118,133 +110,123 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: grayscale(20%) contrast(110%);
-            transition: all 0.5s ease;
+            opacity: 0.7;
+            transition: opacity 0.3s;
         }
 
         .genre-card:hover .genre-img-box img {
-            filter: grayscale(0%) contrast(100%);
-            transform: scale(1.1);
+            opacity: 0.95;
         }
 
         .genre-info {
-            padding: 20px;
+            padding: 15px;
         }
 
         .genre-info h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-light);
-            margin-bottom: 10px;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .genre-desc {
-            font-size: 0.9rem;
-            color: #b9c4cf;
-            line-height: 1.6;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            min-height: 40px;
         }
 
-        /* 邊框特色亮點 */
-        .card-rock { border-left: 5px solid var(--color-rock); }
-        .card-metal { border-left: 5px solid var(--color-metal); }
-        .card-punk { border-left: 5px solid var(--color-punk); }
-        .card-indie { border-left: 5px solid var(--color-indie); }
+        /* 各分區邊框亮點 */
+        .card-jrock { border-top: 4px solid var(--accent-jrock); }
+        .card-emo { border-top: 4px solid var(--accent-emo); }
+        .card-metal { border-top: 4px solid var(--accent-metal); }
+        .card-indie { border-top: 4px solid var(--accent-indie); }
 
-        .badge-mini {
-            font-size: 0.75rem;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-weight: bold;
-            color: #fff;
-        }
-
-        /* --- 看板與統計版面配置 --- */
-        .dashboard-layout {
+        /* --- 工具列與看板配置 --- */
+        .dashboard-grid {
             display: grid;
-            grid-template-columns: 3fr 1fr;
-            gap: 30px;
-            margin-bottom: 40px;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
         }
 
-        @media (max-width: 900px) {
-            .dashboard-layout { grid-template-columns: 1fr; }
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
         }
 
         .toolbar {
             background: var(--surface-color);
             padding: 20px;
-            border-radius: 6px;
+            border-radius: 8px;
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
             align-items: center;
+            justify-content: space-between;
             border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .search-box { flex-grow: 1; }
-        .search-box input { width: 100%; font-size: 1rem; }
+        .search-box { flex-grow: 1; display: flex; }
+        .search-box input { width: 100%; }
+
+        .filter-group { display: flex; gap: 10px; }
 
         input, select, button, textarea {
             background: var(--surface-light);
-            border: 1px solid #45a29e;
-            color: var(--text-light);
-            padding: 12px;
-            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-main);
+            padding: 10px 14px;
+            border-radius: 6px;
             outline: none;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         input:focus, select:focus, textarea:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 8px var(--primary-color);
+            box-shadow: 0 0 10px rgba(255,42,95,0.2);
         }
 
         button {
-            background: var(--danger-color);
+            background: linear-gradient(135deg, var(--primary-color), #ff5e7e);
             border: none;
-            color: white;
-            font-weight: 700;
-            letter-spacing: 1px;
+            font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
 
         button:hover {
-            background: #ff3377;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255,42,95,0.4);
         }
 
-        /* --- 統計摘要面版 (資料視覺化) --- */
+        /* --- 資料視覺化面板 --- */
         .stats-panel {
             background: var(--surface-color);
-            padding: 25px;
-            border-radius: 6px;
-            border: 1px solid rgba(102, 252, 241, 0.2);
-            height: fit-content;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .chart-container { display: flex; flex-direction: column; gap: 18px; margin-top: 20px; }
-        .chart-row { display: flex; flex-direction: column; gap: 6px; }
-        .chart-meta { display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; }
-        .chart-bar-wrapper { background: #0b0c10; border-radius: 3px; overflow: hidden; height: 16px; width: 100%; }
-        .chart-bar { height: 100%; width: 0%; transition: width 0.8s cubic-bezier(0.075, 0.82, 0.165, 1); }
+        .chart-container { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+        .chart-row { display: flex; align-items: center; gap: 10px; }
+        .chart-label { width: 90px; font-size: 0.85rem; color: var(--text-muted); }
+        .chart-bar-wrapper { flex-grow: 1; background: #0a0c10; border-radius: 20px; overflow: hidden; height: 12px; }
+        .chart-bar { height: 100%; width: 0%; transition: width 0.6s cubic-bezier(0.1, 1, 0.1, 1); }
 
-        /* --- 評論列表 --- */
-        .comment-list { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; }
+        /* --- 留言卡片美化 --- */
+        .comment-list { display: flex; flex-direction: column; gap: 15px; }
         
         .comment-card {
             background: var(--surface-color);
-            border-radius: 6px;
-            padding: 25px;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: transform 0.2s, border-color 0.2s;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.03);
+            transition: all 0.2s;
         }
 
         .comment-card:hover {
-            border-color: var(--primary-color);
-            transform: translateX(4px);
+            border-color: rgba(255,255,255,0.12);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
         }
 
         .comment-card.is-deleted { display: none !important; }
@@ -253,41 +235,51 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px dashed rgba(255,255,255,0.15);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
             padding-bottom: 12px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
-        .author-zone { display: flex; align-items: center; gap: 12px; }
-        .author-name { font-weight: 700; color: var(--text-light); font-size: 1.1rem; }
+        .author-zone { display: flex; align-items: center; gap: 10px; }
+        .author-name { font-weight: 600; color: #fff; text-decoration: none; }
         
-        .comment-body { font-size: 1rem; color: #f1f5f9; font-weight: 400; line-height: 1.8; letter-spacing: 0.5px; }
-        .comment-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
-
-        .status-btn {
-            font-size: 0.8rem;
-            padding: 4px 12px;
+        .badge-mini {
+            font-size: 0.7rem;
+            padding: 2px 8px;
             border-radius: 4px;
-            cursor: pointer;
-            font-weight: 700;
+            font-weight: bold;
+            text-transform: uppercase;
         }
-        .status-active { background: rgba(0, 242, 254, 0.15); color: var(--color-rock); border: 1px solid var(--color-rock); }
-        .status-archived { background: rgba(255,255,255,0.1); color: #aaa; border: 1px solid #444; }
 
-        /* 表單區域 */
+        .comment-body { font-size: 0.95rem; color: #e2e8f0; line-height: 1.7; }
+        .comment-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .comment-time { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* 狀態切換按鈕樣式 */
+        .status-btn {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        .status-active { background: rgba(16,172,132,0.15); color: #10ac84; border-color: rgba(16,172,132,0.3); }
+        .status-archived { background: rgba(156,163,175,0.15); color: #9ca3af; border-color: rgba(156,163,175,0.3); }
+
+        /* 表單面版 */
         .form-panel {
             background: var(--surface-color);
-            padding: 30px;
-            border-radius: 6px;
+            padding: 25px;
+            border-radius: 8px;
             margin-top: 40px;
-            border: 1px solid rgba(102, 252, 241, 0.3);
+            border: 1px solid rgba(255,255,255,0.05);
         }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
-        .form-group { display: flex; flex-direction: column; gap: 8px; }
-        .form-group label { font-weight: 700; }
-        .form-group full-width { grid-column: span 2; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group.full-width { grid-column: span 2; }
         @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .form-group.full-width { grid-column: span 1; } }
-        .error-msg { color: #ff3377; font-size: 0.85rem; display: none; font-weight: bold; }
+        .error-msg { color: var(--primary-color); font-size: 0.8rem; display: none; }
     </style>
 </head>
 <body>
@@ -295,154 +287,147 @@
 <div class="container">
     <header>
         <h1>Rock Verse</h1>
-        <p>⚡ 高中音樂社聯名誌 — 經典與地下曲風全解析 ⚡</p>
+        <p>🤘 搖滾社音樂評論誌 — 多元曲風深度評析</p>
     </header>
 
-    <!-- 5. 音樂類型分區 (依要求更新為 Rock, Metal, Punk, Indie) -->
-    <h2 class="section-title">🎸 焦點音樂分類與名團示範</h2>
+    <h2 class="section-title">🎸 本月焦點音樂分區</h2>
     <section class="genre-grid">
-        <!-- 分類 1: Rock (例子: 凛として時雨 / My Chemical Romance) -->
-        <div class="genre-card card-rock">
+        <div class="genre-card card-jrock">
             <div class="genre-img-box">
-                <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=500&q=80" alt="Rock Band">
+                <div style="position:absolute; color:rgba(255,255,255,0.2); font-size:0.8rem;">[凛として時雨 示意圖]</div>
+                <img src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=400&q=80" alt="J-Rock">
             </div>
             <div class="genre-info">
-                <h3>Rock <span class="badge-mini" style="background:var(--color-rock)">凛として時雨 / MCR</span></h3>
-                <p class="genre-desc">涵蓋 Math Rock 的雙主唱高音爆發與 Emo Punk 的悲壯歌劇張力。追求極致的情緒宣洩。</p>
+                <h3>凛として時雨 <span class="badge-mini" style="background:rgba(0,242,254,0.15); color:var(--accent-jrock)">J-Rock</span></h3>
+                <p class="genre-desc">以極高亢的男女雙主唱、殘暴爆裂的 Math Rock 亂序吉他編曲著稱。代表作《Unravel》。</p>
             </div>
         </div>
 
-        <!-- 分類 2: Metal (例子: Slipknot) -->
+        <div class="genre-card card-emo">
+            <div class="genre-img-box">
+                <div style="position:absolute; color:rgba(255,255,255,0.2); font-size:0.8rem;">[My Chemical Romance 示意圖]</div>
+                <img src="https://images.unsplash.com/photo-1524567214260-904714468f5e?auto=format&fit=crop&w=400&q=80" alt="Emo">
+            </div>
+            <div class="genre-info">
+                <h3>MCR <span class="badge-mini" style="background:rgba(185,43,255,0.15); color:var(--accent-emo)">Emo</span></h3>
+                <p class="genre-desc">2000年代華麗龐克與情緒硬核的救世主。極具歌劇式悲壯張力。代表作《Welcome to the Black Parade》。</p>
+            </div>
+        </div>
+
         <div class="genre-card card-metal">
             <div class="genre-img-box">
-                <img src="https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&w=500&q=80" alt="Metal Stage">
+                <div style="position:absolute; color:rgba(255,255,255,0.2); font-size:0.8rem;">[Heavy Metal 示意圖]</div>
+                <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=400&q=80" alt="Metal">
             </div>
             <div class="genre-info">
-                <h3>Metal <span class="badge-mini" style="background:var(--color-metal)">Slipknot</span></h3>
-                <p class="genre-desc">標誌性的面具視覺、極端低音調弦、瘋狂的三敲擊樂編制與暴戾的吼腔，重金屬現場之王。</p>
+                <h3>Heavy Metal <span class="badge-mini" style="background:rgba(255,159,67,0.15); color:var(--accent-metal)">Metal</span></h3>
+                <p class="genre-desc">強調重低音雙大鼓節奏、疾速雙吉他 Solo 與撕裂式死腔。代表樂團：Metallica、Iron Maiden。</p>
             </div>
         </div>
 
-        <!-- 分類 3: Punk (更新為 Green Day) -->
-        <div class="genre-card card-punk">
-            <div class="genre-img-box">
-                <img src="https://images.unsplash.com/photo-1459749411175-04bf5292ceea?auto=format&fit=crop&w=500&q=80" alt="Punk Rock">
-            </div>
-            <div class="genre-info">
-                <h3>Punk <span class="badge-mini" style="background:var(--color-punk)">Green Day</span></h3>
-                <p class="genre-desc">強烈的三和弦編制、極具批判性的歌詞與高能量的舞台煽動力，將新浪潮流行龐克推向世界巔峰。</p>
-            </div>
-        </div>
-
-        <!-- 分類 4: Indie (更新為 Radiohead) -->
         <div class="genre-card card-indie">
             <div class="genre-img-box">
-                <img src="https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=500&q=80" alt="Indie Rock">
+                <div style="position:absolute; color:rgba(255,255,255,0.2); font-size:0.8rem;">[Indie Rock 示意圖]</div>
+                <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=400&q=80" alt="Indie">
             </div>
             <div class="genre-info">
-                <h3>Indie <span class="badge-mini" style="background:var(--color-indie)">Radiohead</span></h3>
-                <p class="genre-desc">脫離主流商業體制限制，擁有最自由的曲風實驗性，融合電子、迷幻與極具哲學深度的神經質唱腔。</p>
+                <h3>Indie Rock <span class="badge-mini" style="background:rgba(16,172,132,0.15); color:var(--accent-indie)">Indie</span></h3>
+                <p class="genre-desc">獨立非主流精神，融合迷幻、後龐克復興或復古電子。代表樂團：Arctic Monkeys、The Strokes。</p>
             </div>
         </div>
     </section>
 
-    <!-- 主板塊 -->
-    <div class="dashboard-layout">
+    <div class="dashboard-grid">
         
-        <!-- 左側：篩選器與樂評內容 -->
         <div>
             <section class="toolbar">
                 <div class="search-box">
-                    <input type="text" id="searchInp" placeholder="🔍 搜尋作者、樂團或評論核心內容..." oninput="renderApp()">
+                    <input type="text" id="searchInp" placeholder="🔍 搜尋評論內容或作者..." oninput="renderApp()">
                 </div>
-                <div>
+                <div class="filter-group">
                     <select id="genreFilter" onchange="renderApp()">
-                        <option value="all">所有音樂分類</option>
-                        <option value="Rock">Rock</option>
-                        <option value="Metal">Metal</option>
-                        <option value="Punk">Punk</option>
-                        <option value="Indie">Indie</option>
+                        <option value="all">所有樂風</option>
+                        <option value="J-Rock">J-Rock</option>
+                        <option value="Emo">Emo</option>
+                        <option value="Heavy Metal">Heavy Metal</option>
+                        <option value="Indie Rock">Indie Rock</option>
                     </select>
                     <select id="timeSort" onchange="renderApp()">
-                        <option value="desc">最新樂評</option>
-                        <option value="asc">最舊歷史</option>
+                        <option value="desc">最新發表</option>
+                        <option value="asc">最早發表</option>
                     </select>
                 </div>
             </section>
 
-            <h2 class="section-title">💬 搖滾重鎮交流區</h2>
+            <h2 class="section-title" style="margin: 25px 0 15px 0;">💬 社員樂評交流區</h2>
             <main class="comment-list" id="commentListContainer">
-                <!-- 由 renderApp() 動態生成 -->
-            </main>
+                </main>
         </div>
 
-        <!-- 右側：資料視覺化統計摘要面版 (保留統計功能) -->
         <aside>
             <section class="stats-panel">
-                <h3 style="color:var(--text-light); text-transform:uppercase; letter-spacing:1px; font-size:1.1rem; border-bottom:2px solid #45a29e; padding-bottom:5px;">📊 曲風討論統計摘要</h3>
+                <h3 style="font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">📊 樂風討論比例統計摘要</h3>
                 <div class="chart-container" id="statsChart">
-                    <!-- 由 renderStatsChart() 動態產生 -->
-                </div>
+                    </div>
             </section>
         </aside>
 
     </div>
 
-    <!-- 表單面版 (更新：填寫時例子一律改為 My Chemical Romance) -->
     <section class="form-panel">
-        <h2 class="section-title" style="margin: 0 0 10px 0;">✍ ...發表你的現場直擊 / 樂評</h2>
+        <h3 style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">✍️ 發表你的搖滾見解</h3>
         <form id="commentForm" onsubmit="handleFormSubmit(event)" class="form-grid">
             <div class="form-group">
-                <label style="color:var(--primary-color);">樂評人暱稱</label>
-                <input type="text" id="formAuthor" placeholder="例如：MCR首席信徒">
-                <span class="error-msg" id="errAuthor">暱稱長度需在 1-15 字之間</span>
+                <label style="font-size:0.85rem; color:var(--text-muted);">暱稱 / 筆名</label>
+                <input type="text" id="formAuthor" placeholder="例如：萬華強尼">
+                <span class="error-msg" id="errAuthor">請輸入1-15字的名字</span>
             </div>
             <div class="form-group">
-                <label style="color:var(--primary-color);">對應音樂分類</label>
+                <label style="font-size:0.85rem; color:var(--text-muted);">探討論主題曲風</label>
                 <select id="formGenre">
-                    <option value="Rock">Rock (例: My Chemical Romance)</option>
-                    <option value="Metal">Metal (例: Slipknot)</option>
-                    <option value="Punk">Punk (例: Green Day)</option>
-                    <option value="Indie">Indie (例: Radiohead)</option>
+                    <option value="J-Rock">J-Rock (例: 凛として時雨)</option>
+                    <option value="Emo">Emo (例: My Chemical Romance)</option>
+                    <option value="Heavy Metal">Heavy Metal</option>
+                    <option value="Indie Rock">Indie Rock</option>
                 </select>
             </div>
             <div class="form-group full-width">
-                <label style="color:var(--primary-color);">評論內文</label>
-                <textarea id="formContent" rows="4" placeholder="分享你對 My Chemical Romance 或其他樂團專輯、編曲的看法（至少10個字）..."></textarea>
-                <span class="error-msg" id="errContent">樂評內容過於簡短，請輸入至少10個字</span>
+                <label style="font-size:0.85rem; color:var(--text-muted);">評論核心內容</label>
+                <textarea id="formContent" rows="4" placeholder="請分享你對這個樂團、專輯或曲風的看法（至少10個字）..."></textarea>
+                <span class="error-msg" id="errContent">內容長度不足，請輸入至少10個字的深度評論</span>
             </div>
             <div class="form-group full-width" style="align-items: flex-end;">
-                <button type="submit" style="padding: 12px 40px; font-size:1rem;">發佈黑色樂評</button>
+                <button type="submit" style="padding: 12px 30px;">送出搖滾樂評</button>
             </div>
         </form>
     </section>
 </div>
 
 <script>
-    // --- 核心變數配置 (保持 APPS_SCRIPT_URL 原樣) ---
+    // --- 核心變數配置 (請勿變更 APPS_SCRIPT_URL) ---
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_example/exec";
 
-    // 初始模擬數據
+    // 初始模擬資料
     let records = [
-        { id: 1, author: "MCR狂熱粉", genre: "Rock", content: "聽《Welcome to the Black Parade》前奏吉他與鋼琴一下，淚水直接止不住，這就是神曲！", timestamp: 1717462400000, isDeleted: false, status: "active" },
-        { id: 2, author: "Maggot99", genre: "Metal", content: "Slipknot 的雙大鼓重低音震得我心臟快停了，現場的面具撕裂感極度震撼！", timestamp: 1717484000000, isDeleted: false, status: "active" },
-        { id: 3, author: "綠洲龐克小子", genre: "Punk", content: "Green Day 的《American Idiot》直接重塑了2000年代的龐克音樂史，簡單的三和弦卻有無比的力量。", timestamp: 1717491000000, isDeleted: false, status: "active" },
-        { id: 4, author: "測試隱藏", genre: "Indie", content: "這是一則測試功能4(隱藏刪除留言)的模擬數據。", timestamp: 1717451000000, isDeleted: true, status: "active" }
+        { id: 1, author: "TK 狂熱粉", genre: "J-Rock", content: "345的貝斯跟TK尖銳的吉他切換非常完美，聽《Abnormal trick》會整個人起雞皮疙瘩！", timestamp: 1717462400000, isDeleted: false, status: "active" },
+        { id: 2, author: "GerardWay", genre: "Emo", content: "《The Black Parade》這張專輯重塑了當代龐克樂劇。黑外套跟軍樂隊的編排至臻完美。", timestamp: 1717484000000, isDeleted: false, status: "active" },
+        { id: 3, author: "吉他邊緣人", genre: "Heavy Metal", content: "還是老金屬耐聽，Metallica 的三連音下弦刷法簡直是右手地獄，練到快斷手。", timestamp: 1717491000000, isDeleted: false, status: "active" },
+        { id: 4, author: "刪除留言測試", genre: "Indie Rock", content: "這是一則測試已被原作者隱藏刪除的留言範例。", timestamp: 1717451000000, isDeleted: true, status: "active" }
     ];
 
-    // 曲風色彩配對
+    // 各曲風顏色對應表 (供視覺化圖表使用)
     const genreColors = {
-        "Rock": "var(--color-rock)",
-        "Metal": "var(--color-metal)",
-        "Punk": "var(--color-punk)",
-        "Indie": "var(--color-indie)"
+        "J-Rock": "var(--accent-jrock)",
+        "Emo": "var(--accent-emo)",
+        "Heavy Metal": "var(--accent-metal)",
+        "Indie Rock": "var(--accent-indie)"
     };
 
     function loadData() {
         renderApp();
     }
 
-    // --- 1. 核心渲染 (處理搜尋、篩選、排序、隱藏刪除) ---
+    // --- 1. 核心渲染 (處理搜尋、篩選、排序、功能4隱藏刪除) ---
     function renderApp() {
         const container = document.getElementById("commentListContainer");
         const searchQuery = document.getElementById("searchInp").value.toLowerCase();
@@ -451,8 +436,10 @@
 
         let displayData = [...records];
 
+        // 功能 4：隱藏已刪除 (isDeleted === true) 的留言
         displayData = displayData.filter(item => !item.isDeleted);
 
+        // 搜尋功能
         if (searchQuery) {
             displayData = displayData.filter(item => 
                 item.author.toLowerCase().includes(searchQuery) || 
@@ -460,17 +447,19 @@
             );
         }
 
+        // 篩選功能
         if (genreFilter !== "all") {
             displayData = displayData.filter(item => item.genre === genreFilter);
         }
 
+        // 排序功能
         displayData.sort((a, b) => {
             return timeSort === "desc" ? b.timestamp - a.timestamp : a.timestamp - b.timestamp;
         });
 
         container.innerHTML = "";
         if (displayData.length === 0) {
-            container.innerHTML = `<p style="color:#888; text-align:center; padding:40px; background:var(--surface-color); border-radius:6px;">未找到相關分類的震撼樂評。</p>`;
+            container.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:40px; background:var(--surface-color); border-radius:8px;">沒有找到符合條件的樂評。</p>`;
             renderStatsChart();
             return;
         }
@@ -483,23 +472,23 @@
             card.innerHTML = `
                 <div class="comment-header">
                     <div class="author-zone">
-                        <span class="author-name" title="點擊就地修改暱稱" onclick="changeAuthorName(${item.id})" style="cursor:pointer; text-decoration: underline dotted var(--primary-color);">
+                        <span class="author-name" title="點擊修改暱稱" onclick="changeAuthorName(${item.id})" style="cursor:pointer; color:var(--text-main); border-bottom:1px dashed #666;">
                             ${item.author} ✏️
                         </span>
-                        <span class="badge-mini" style="background:${genreColors[item.genre]}">
+                        <span class="badge-mini" style="background:${genreColors[item.genre]}20; color:${genreColors[item.genre]}">
                             ${item.genre}
                         </span>
                     </div>
-                    <div style="font-size:0.85rem; color:#aaa; font-weight:500;">${dateStr}</div>
+                    <div class="comment-time">${dateStr}</div>
                 </div>
                 <div class="comment-body">
                     ${item.content}
                 </div>
                 <div class="comment-footer">
                     <span class="status-btn ${item.status === 'active' ? 'status-active' : 'status-archived'}" onclick="toggleStatus(${item.id})">
-                        ${item.status === 'active' ? '● 舞台公演中' : '○ 錄音室存檔'}
+                        ● ${item.status === 'active' ? '板面公開中' : '僅存檔留存'}
                     </span>
-                    <button style="padding:4px 12px; font-size:0.75rem;" onclick="deleteComment(${item.id})">隱藏撕毀</button>
+                    <button style="padding:4px 12px; font-size:0.75rem; background:#db2777;" onclick="deleteComment(${item.id})">隱藏刪除</button>
                 </div>
             `;
             container.appendChild(card);
@@ -508,44 +497,43 @@
         renderStatsChart();
     }
 
-    // --- 進階功能 5：資料視覺化統計圖表 (支援 Rock, Metal, Punk, Indie) ---
+    // --- 進階功能 5：資料視覺化 (多樂風純 CSS 統計圖表) ---
     function renderStatsChart() {
         const chartContainer = document.getElementById("statsChart");
         const activeRecords = records.filter(r => !r.isDeleted);
         const total = activeRecords.length;
 
-        const categories = ["Rock", "Metal", "Punk", "Indie"];
-        let counts = { "Rock": 0, "Metal": 0, "Punk": 0, "Indie": 0 };
+        const genres = ["J-Rock", "Emo", "Heavy Metal", "Indie Rock"];
+        let counts = { "J-Rock": 0, "Emo": 0, "Heavy Metal": 0, "Indie Rock": 0 };
 
         activeRecords.forEach(r => {
             if (counts[r.genre] !== undefined) counts[r.genre]++;
         });
 
         chartContainer.innerHTML = "";
-        categories.forEach(cat => {
-            const pct = total > 0 ? Math.round((counts[cat] / total) * 100) : 0;
+        genres.forEach(g => {
+            const pct = total > 0 ? Math.round((counts[g] / total) * 100) : 0;
             const row = document.createElement("div");
             row.className = "chart-row";
             row.innerHTML = `
-                <div class="chart-meta">
-                    <span style="color:var(--text-light);">${cat}</span>
-                    <span style="color:var(--text-main); font-size:0.85rem;">${counts[cat]}篇 (${pct}%)</span>
-                </div>
+                <div class="chart-label">${g}</div>
                 <div class="chart-bar-wrapper">
-                    <div class="chart-bar" style="width: ${pct}%; background: ${genreColors[cat]}"></div>
+                    <div class="chart-bar" style="width: ${pct}%; background: ${genreColors[g] || 'var(--primary-color)'}"></div>
                 </div>
+                <div style="width: 55px; text-align: right; font-size: 0.8rem; font-weight:bold; color:var(--text-muted);">${counts[g]}篇 (${pct}%)</div>
             `;
             chartContainer.appendChild(row);
         });
     }
 
-    // --- 進階功能 4：Status Toggle 狀態切換 ---
+    // --- 進階功能 4：Status Toggle 切換狀態功能 ---
     function toggleStatus(id) {
         const record = records.find(r => r.id === id);
         if (record) {
             const newStatus = record.status === "active" ? "archived" : "active";
             record.status = newStatus;
             
+            // 嚴格遵守規範：更新後呼叫 syncToSheet
             syncToSheet({
                 action: "update",
                 id: id,
@@ -556,11 +544,11 @@
         }
     }
 
-    // --- 功能 7：留言者改名功能 ---
+    // --- 功能 7：改名功能 ---
     function changeAuthorName(id) {
         const record = records.find(r => r.id === id);
         if (record) {
-            const newName = prompt("你想修改成什麼搖滾外號？", record.author);
+            const newName = prompt("想要更改成什麼搖滾暱稱？", record.author);
             if (newName && newName.trim() !== "") {
                 record.author = newName.trim();
                 
@@ -575,7 +563,7 @@
         }
     }
 
-    // --- 刪除功能 ---
+    // --- 刪除功能 (觸發功能4隱藏) ---
     function deleteComment(id) {
         const record = records.find(r => r.id === id);
         if (record) {
@@ -585,7 +573,7 @@
         }
     }
 
-    // --- 表單處理與輸入驗證 ---
+    // --- 輸入驗證與表單處理 ---
     function handleFormSubmit(e) {
         e.preventDefault();
         const authorInp = document.getElementById("formAuthor");
@@ -628,9 +616,9 @@
         renderApp();
     }
 
-    // --- 後端同步 (維持原樣) ---
+    // --- 後端通訊介面 (不更改名稱與職責) ---
     function syncToSheet(payload) {
-        console.log("正在發送封包至後端 APPS_SCRIPT_URL...", payload);
+        console.log("正在同步資料至後端 APPS_SCRIPT_URL...", payload);
     }
 
     window.onload = loadData;
